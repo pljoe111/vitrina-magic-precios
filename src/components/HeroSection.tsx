@@ -73,7 +73,7 @@ const HeroSection = () => {
                   <div>
                     <p className="text-xs text-muted-foreground font-body">#1 en Ventas</p>
                     <p className="text-sm font-bold text-foreground font-body">
-                      {featured.name} — desde ${featured.pricePerMg}/mg
+                      {featured.name} — desde MX${featured.pricePerMg}/mg
                     </p>
                   </div>
                 </div>

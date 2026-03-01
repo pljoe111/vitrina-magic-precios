@@ -50,7 +50,7 @@ const ProductCard = ({ product, index }: ProductCardProps) => {
               <span className="text-xs text-muted-foreground font-body">Desde</span>
               <div className="flex items-baseline gap-1">
                 <span className="text-2xl font-bold text-foreground font-body">
-                  ${product.pricePerMg}
+                  MX${product.pricePerMg}
                 </span>
                 <span className="text-sm text-muted-foreground font-body">/mg</span>
               </div>
