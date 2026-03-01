@@ -3,12 +3,17 @@ import { Product } from "@/data/products";
 interface ProductCardProps {
   product: Product;
   index: number;
+  onClick?: () => void;
 }
 
-const ProductCard = ({ product, index }: ProductCardProps) => {
+const ProductCard = ({ product, index, onClick }: ProductCardProps) => {
   return (
     <div
-      className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-500 hover:shadow-card-hover opacity-0 animate-fade-up"
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onClick?.()}
+      className="group relative flex cursor-pointer flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-500 hover:shadow-card-hover opacity-0 animate-fade-up"
       style={{ animationDelay: `${index * 100}ms` }}
     >
       {product.badge && (

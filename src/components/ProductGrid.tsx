@@ -1,7 +1,11 @@
-import { products } from "@/data/products";
+import { useState } from "react";
+import { products, Product } from "@/data/products";
 import ProductCard from "@/components/ProductCard";
+import ProductDetailModal from "@/components/ProductDetailModal";
 
 const ProductGrid = () => {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
   return (
     <section id="productos" className="bg-background py-20">
       <div className="container mx-auto px-6">
@@ -20,10 +24,21 @@ const ProductGrid = () => {
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product, i) => (
-            <ProductCard key={product.id} product={product} index={i} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              index={i}
+              onClick={() => setSelectedProduct(product)}
+            />
           ))}
         </div>
       </div>
+
+      <ProductDetailModal
+        product={selectedProduct}
+        open={!!selectedProduct}
+        onOpenChange={(open) => !open && setSelectedProduct(null)}
+      />
     </section>
   );
 };
