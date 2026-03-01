@@ -1,5 +1,6 @@
 import { products } from "@/data/products";
 import tirzepatideImg from "@/assets/tirzepatide.png";
+import logo from "@/assets/logo.png";
 
 const HeroSection = () => {
   const featured = products[0]; // Tirzepatide
@@ -9,6 +10,15 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--primary)/0.08),transparent_70%)]" />
       
       <div className="container relative mx-auto px-6 py-20 lg:py-28">
+        {/* Logo */}
+        <div className="mb-10 flex items-center gap-3 opacity-0 animate-fade-in">
+          <img src={logo} alt="Alchem Certified Pure" className="h-14 w-14" />
+          <div>
+            <p className="text-lg font-bold text-foreground font-display tracking-wide">ALCHEM</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-body">Certified Pure</p>
+          </div>
+        </div>
+
         <div className="grid items-center gap-12 lg:grid-cols-2">
           {/* Text */}
           <div className="max-w-xl opacity-0 animate-fade-up">
