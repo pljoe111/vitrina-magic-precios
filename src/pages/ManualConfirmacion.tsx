@@ -52,7 +52,7 @@ const ManualConfirmacion = () => {
               <p className="text-sm text-muted-foreground font-body mb-3">
                 ¿Listo para explorar nuestros productos?
               </p>
-              <Link to="/">
+              <Link to="/catalogo">
                 <Button variant="outline" className="font-body">
                   Ver catálogo de productos
                   <ArrowRight className="h-4 w-4 ml-2" />
