@@ -9,12 +9,10 @@ const Footer = () => {
             <img src={logo} alt="Alchem" className="h-10 w-10 invert" />
             <div>
               <p className="text-lg font-bold text-background font-display">ALCHEM</p>
-              <p className="mt-0.5 text-xs text-background/60 font-body">
-                Péptidos liofilizados de grado investigación
-              </p>
+              <p className="mt-0.5 text-xs text-background/60 font-body">Péptidos de la mas alta calidad</p>
             </div>
           </div>
-          <p className="text-xs text-background/40 font-body">
+          <p style="display:none" className="text-xs text-background/40 font-body">
             Solo para uso en investigación. No apto para consumo humano.
           </p>
         </div>
