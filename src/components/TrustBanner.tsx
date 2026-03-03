@@ -3,7 +3,7 @@ import { Shield, FlaskConical, Snowflake } from "lucide-react";
 const features = [
   {
     icon: FlaskConical,
-    title: "Pureza ≥98%",
+    title: "Pureza certificada%",
     description: "Verificada por HPLC y espectrometría de masas en cada lote de producción.",
   },
   {
