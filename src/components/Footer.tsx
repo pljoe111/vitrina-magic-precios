@@ -12,7 +12,7 @@ const Footer = () => {
               <p className="mt-0.5 text-xs text-background/60 font-body">Péptidos de la mas alta calidad</p>
             </div>
           </div>
-          <p style="display:none" className="text-xs text-background/40 font-body">
+          <p style={{ display: "none" }} className="text-xs text-background/40 font-body">
             Solo para uso en investigación. No apto para consumo humano.
           </p>
         </div>
