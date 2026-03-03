@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Product } from "@/data/products";
 import { productPricing } from "@/data/pricing";
 import { MessageCircle, ExternalLink, ShieldCheck } from "lucide-react";
@@ -141,14 +142,12 @@ const ProductDetailModal = ({
             <p className="mt-1 text-muted-foreground">
               Cada lote es analizado internamente y verificado por laboratorios
               independientes.{" "}
-              <a
-                href="https://alchem.is/test-results"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to="/test-results"
                 className="inline-flex items-center gap-1 text-primary hover:underline"
               >
                 Ver resultados <ExternalLink className="h-3 w-3" />
-              </a>
+              </Link>
             </p>
           </div>
         </div>
