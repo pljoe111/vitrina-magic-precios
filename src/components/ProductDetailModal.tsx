@@ -188,8 +188,8 @@ const ProductDetailModal = ({
         </div>
 
         {/* CTA */}
-        <div className="mt-2 flex flex-row gap-2">
-          <Button asChild className="flex-1 gap-2 rounded-full" size="lg">
+        <div className="mt-2 flex flex-col gap-2">
+          <Button asChild className="w-full gap-2 rounded-full h-14 text-base" size="lg">
             <a
               href={`https://wa.me/528117963113?text=${encodeURIComponent(
                 `Hola, me interesa cotizar ${product.name}. ¿Podrían darme más información?`
@@ -201,7 +201,7 @@ const ProductDetailModal = ({
               Cotizar por WhatsApp
             </a>
           </Button>
-          <Button asChild variant="outline" className="flex-1 gap-2 rounded-full" size="lg">
+          <Button asChild variant="outline" className="w-full gap-2 rounded-full h-14 text-base" size="lg">
             <a
               href={`https://wa.me/528131082689?text=${encodeURIComponent(
                 `Hola, me interesa hacer un pedido de ${product.name}. ¿Cuál es la disponibilidad?`
