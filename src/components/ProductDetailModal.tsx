@@ -39,7 +39,7 @@ const ProductDetailModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full p-4 sm:p-6">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] rounded-xl sm:rounded-lg p-4 sm:p-6">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <img
@@ -189,7 +189,7 @@ const ProductDetailModal = ({
 
         {/* CTA */}
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-          <Button asChild className="flex-1 gap-2" size="lg">
+          <Button asChild className="flex-1 gap-2 rounded-full" size="lg">
             <a
               href={`https://wa.me/528117963113?text=${encodeURIComponent(
                 `Hola, me interesa cotizar ${product.name}. ¿Podrían darme más información?`
@@ -201,7 +201,7 @@ const ProductDetailModal = ({
               Cotizar por WhatsApp
             </a>
           </Button>
-          <Button asChild variant="outline" className="flex-1 gap-2" size="lg">
+          <Button asChild variant="outline" className="flex-1 gap-2 rounded-full" size="lg">
             <a
               href={`https://wa.me/528131082689?text=${encodeURIComponent(
                 `Hola, me interesa hacer un pedido de ${product.name}. ¿Cuál es la disponibilidad?`
