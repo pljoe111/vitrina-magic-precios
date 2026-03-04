@@ -270,6 +270,53 @@ const TestResults = () => {
         </div>
       </section>
 
+      {/* QA Process */}
+      <section className="py-16 border-t border-border bg-muted/30">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground font-display text-center mb-10">
+            Nuestro Proceso de <span className="text-primary">Control de Calidad</span>
+          </h2>
+
+          <div className="grid gap-8 md:grid-cols-3">
+            <div className="space-y-2">
+              <div className="rounded-full bg-primary/10 w-10 h-10 flex items-center justify-center mb-3">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="text-base font-bold text-foreground font-body">
+                Analizado Antes del Envío
+              </h3>
+              <p className="text-sm text-muted-foreground font-body">
+                Cada lote se somete a pruebas internas rigurosas de pureza, potencia, esterilidad y endotoxinas antes de ser enviado. Ningún producto sale sin pasar nuestros estándares de calidad.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="rounded-full bg-primary/10 w-10 h-10 flex items-center justify-center mb-3">
+                <FlaskConical className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="text-base font-bold text-foreground font-body">
+                Verificación por Terceros
+              </h3>
+              <p className="text-sm text-muted-foreground font-body">
+                Además de las pruebas internas, laboratorios independientes verifican nuestros resultados de pureza y potencia, proporcionando una capa adicional de confianza para nuestros clientes.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <div className="rounded-full bg-primary/10 w-10 h-10 flex items-center justify-center mb-3">
+                <FileText className="h-5 w-5 text-primary" />
+              </div>
+              <h3 className="text-base font-bold text-foreground font-body">
+                ¿Qué significa "Reporte Pendiente"?
+              </h3>
+              <p className="text-sm text-muted-foreground font-body">
+                Este estado indica que estamos esperando resultados de laboratorios externos. El producto ya pasó nuestras pruebas internas — algunos laboratorios simplemente tardan más, pero esto no afecta la calidad del producto.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
