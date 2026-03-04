@@ -7,11 +7,6 @@ const features = [
     description: "Verificada por HPLC y espectrometría de masas en cada lote de producción.",
   },
   {
-    icon: Snowflake,
-    title: "Liofilización Avanzada",
-    description: "Proceso que preserva la integridad molecular para máxima vida útil y estabilidad.",
-  },
-  {
     icon: Shield,
     title: "Calidad Certificada",
     description: "Certificado de análisis disponible. Cumplimiento con estándares GMP de manufactura.",
