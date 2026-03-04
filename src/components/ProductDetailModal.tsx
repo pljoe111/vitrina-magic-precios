@@ -39,7 +39,7 @@ const ProductDetailModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full p-4 sm:p-6">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <img
@@ -64,7 +64,42 @@ const ProductDetailModal = ({
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-widest text-primary font-body">
               Precios por presentación
             </h3>
-            <div className="rounded-lg border border-border overflow-hidden">
+
+            {/* Mobile: card layout */}
+            <div className="space-y-3 sm:hidden">
+              {pricing.tiers.map((tier) => {
+                const discount = Math.round(
+                  ((tier.priceVial - tier.priceMayoreoN2) / tier.priceVial) * 100
+                );
+                return (
+                  <div key={tier.totalMg} className="rounded-lg border border-border p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-body font-semibold text-foreground text-base">{tier.totalMg} mg</span>
+                      <span className="inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                        -{discount}%
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-sm font-body">
+                      <div>
+                        <p className="text-muted-foreground text-xs">Por vial</p>
+                        <p className="text-foreground">{formatPrice(tier.priceVial)}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-xs">Mayoreo N1</p>
+                        <p className="text-foreground">{formatPrice(tier.priceMayoreoN1)}</p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-xs">Mayoreo N2</p>
+                        <p className="font-semibold text-foreground">{formatPrice(tier.priceMayoreoN2)}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop: table layout */}
+            <div className="hidden sm:block rounded-lg border border-border overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
