@@ -188,7 +188,7 @@ const ProductDetailModal = ({
         </div>
 
         {/* CTA */}
-        <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-2 flex flex-row gap-2">
           <Button asChild className="flex-1 gap-2 rounded-full" size="lg">
             <a
               href={`https://wa.me/528117963113?text=${encodeURIComponent(
