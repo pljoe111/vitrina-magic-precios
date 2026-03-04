@@ -8,8 +8,9 @@ const features = [
   },
   {
     icon: Snowflake,
-    title: "Liofilización Avanzada",
-    description: "Proceso que preserva la integridad molecular para máxima vida útil y estabilidad.",
+    title: "Liofilizado",
+    description:
+      "Proceso de secado que preserva la estructura molecular y mejora la estabilidad durante el envío y almacenamiento.",
   },
   {
     icon: Shield,
