@@ -33,7 +33,7 @@ export const testResults: TestResult[] = [
     potency: "66.4mg (110.7%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "<0.05 EU/ml",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -54,7 +54,7 @@ export const testResults: TestResult[] = [
     potency: "143.3mg (119.4%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "<0.05 EU/ml",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -75,7 +75,7 @@ export const testResults: TestResult[] = [
     potency: "63.8mg (106.4%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "<0.05 EU/ml",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -96,7 +96,7 @@ export const testResults: TestResult[] = [
     potency: "31.2mg (104.1%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "<0.05 EU/ml",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -117,7 +117,7 @@ export const testResults: TestResult[] = [
     potency: "13.8mg (137.6%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "<0.05 EU/ml",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -138,7 +138,7 @@ export const testResults: TestResult[] = [
     potency: "2.4mg (118.2%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "<0.05 EU/ml",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -159,7 +159,7 @@ export const testResults: TestResult[] = [
     potency: "10.3mg (102.9%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "<0.05 EU/ml",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -180,7 +180,7 @@ export const testResults: TestResult[] = [
     potency: "48.7mg (97.4%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "<0.05 EU/ml",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -201,7 +201,7 @@ export const testResults: TestResult[] = [
     potency: "5.8mg (115.2%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "<0.05 EU/ml",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -222,7 +222,7 @@ export const testResults: TestResult[] = [
     potency: "34.3mg (114.3%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "N/A",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -243,7 +243,7 @@ export const testResults: TestResult[] = [
     potency: "33.6mg (111.8%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "N/A",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -264,7 +264,7 @@ export const testResults: TestResult[] = [
     potency: "559.1mg (111.8%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "N/A",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (BTLabs)",
@@ -285,7 +285,7 @@ export const testResults: TestResult[] = [
     potency: "20.4mg (102.1%)",
     contaminants: "None detected",
     sterility: "Pass",
-    endotoxins: "N/A",
+    endotoxins: "Pass",
     certificates: [
       {
         label: "Purity/Potency (Krause Analytical)",
