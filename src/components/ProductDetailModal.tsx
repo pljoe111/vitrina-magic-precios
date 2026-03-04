@@ -201,18 +201,6 @@ const ProductDetailModal = ({
               Cotizar por WhatsApp
             </a>
           </Button>
-          <Button asChild variant="outline" className="w-full gap-2 rounded-full h-14 text-base" size="lg">
-            <a
-              href={`https://wa.me/528131082689?text=${encodeURIComponent(
-                `Hola, me interesa hacer un pedido de ${product.name}. ¿Cuál es la disponibilidad?`
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <MessageCircle className="h-5 w-5" />
-              Pedidos y cotizaciones
-            </a>
-          </Button>
         </div>
 
         <p className="text-center text-xs text-muted-foreground font-body">
