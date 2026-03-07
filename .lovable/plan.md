@@ -1,26 +1,26 @@
 
 
-## Hacer la landing de captacion de leads la pagina principal
+## Problem
 
-### Cambio
+The OG image URLs in `index.html` point to `https://vitrina-magic-precios.lovable.app/og-preview.png` — a Lovable domain. When WhatsApp (or any platform) fetches the preview, it shows the Lovable-hosted image/URL. Additionally, the `og-preview.png` file itself may contain Lovable branding.
 
-Actualmente `/` muestra el catalogo de productos y `/manual-profesional` muestra la landing de captacion de leads. El cambio es simple: intercambiar las rutas para que la landing del manual sea lo primero que vean los visitantes.
+## Plan
 
-### Rutas resultantes
+### 1. Update OG image URLs to use relative paths
+Change the `og:image` and `twitter:image` meta tags to use a relative path (`/og-preview.png`) instead of the full `lovable.app` URL. **However**, OG images require absolute URLs to work properly. Since the site is published at `vitrina-magic-precios.lovable.app`, the URLs technically need to stay absolute — but the domain itself says "lovable".
 
-| Ruta | Contenido |
-|---|---|
-| `/` | Landing de captacion de leads (ManualProfesional) |
-| `/catalogo` | Catalogo de productos (Index) |
-| `/manual-confirmacion` | Confirmacion post-formulario |
+**Question for you**: Do you have a custom domain connected (like `alchem.is`)? If so, I'll update the OG URLs to use that domain instead. If not, relative paths won't work for OG previews — you'd need to connect a custom domain first to fully remove the Lovable reference from the URL.
 
-### Archivo a modificar
+### 2. Remove the TODO comment
+Line 6 has a Lovable-generated TODO comment — will remove it.
 
-**`src/App.tsx`** - Cambiar el elemento de la ruta `/` a `ManualProfesional` y mover `Index` a `/catalogo`.
+### 3. Replace `og-preview.png`
+The current `og-preview.png` may have Lovable branding. You'll need to **upload a new OG preview image** with Alchem branding (recommended size: 1200×630px). I can then set it as the OG image.
 
-### Consideraciones
+### 4. Add `og:url` meta tag
+Add an `og:url` property pointing to your actual domain to ensure previews resolve correctly.
 
-- Los enlaces internos que apunten a `/manual-profesional` se actualizaran a `/`.
-- El enlace del hero "Descargar ahora" que apunta a `#formulario` seguira funcionando igual.
-- La pagina de confirmacion puede incluir un CTA hacia `/catalogo` para que los leads descubran los productos.
+### Summary of changes
+- **`index.html`**: Update OG/Twitter image URLs to your custom domain (if available), remove TODO comment, add `og:url`
+- **`public/og-preview.png`**: Needs replacement — please upload a new branded image
 
