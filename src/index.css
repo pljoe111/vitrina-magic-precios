@@ -107,3 +107,20 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
+
+/* Print styles for calculator card */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+  .printable-card {
+    border-color: black !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+}
