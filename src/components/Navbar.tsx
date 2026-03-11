@@ -8,6 +8,7 @@ const links = [
   { to: "/", label: "Manual Profesional" },
   { to: "/catalogo", label: "Catálogo" },
   { to: "/test-results", label: "Test Results" },
+  { to: "/calculadora", label: "Calculadora" },
 ];
 
 const Navbar = () => {
