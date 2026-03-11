@@ -82,7 +82,7 @@ const DoseCalculator = () => {
     setMassMg(String(firstMass));
     setDiluentMl(String(preset.defaultMlMap[firstMass]));
     // Reset dose rows with first dose option
-    setDoseRows([{ id: genId(), dose: preset.doseOptions[0], customDose: false }]);
+    setDoseRows(preset.doseOptions.map((d) => ({ id: genId(), dose: d, customDose: false })));
   };
 
   const handleMassPresetSelect = (val: string) => {
