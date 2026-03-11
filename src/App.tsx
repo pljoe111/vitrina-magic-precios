@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import ManualProfesional from "./pages/ManualProfesional";
 import ManualConfirmacion from "./pages/ManualConfirmacion";
 import TestResults from "./pages/TestResults";
+import DoseCalculator from "./pages/DoseCalculator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
