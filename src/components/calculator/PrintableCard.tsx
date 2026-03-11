@@ -27,6 +27,7 @@ const PrintableCard = ({ productName, massMg, diluentMl, concentration, doseRows
     <div className="printable-card border-2 border-foreground rounded-lg p-8 max-w-lg mx-auto bg-background font-body">
       {/* Header */}
       <div className="text-center border-b-2 border-foreground pb-4 mb-4">
+        <img src={logo} alt="Alchem" className="h-8 mx-auto mb-3" />
         <h2 className="text-2xl font-bold tracking-wide uppercase font-display text-foreground">
           {productName || "Peptide"}
         </h2>
