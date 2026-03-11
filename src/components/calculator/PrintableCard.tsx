@@ -1,3 +1,5 @@
+import logo from "@/assets/logo.png";
+
 interface DoseRow {
   id: string;
   dose: number;
