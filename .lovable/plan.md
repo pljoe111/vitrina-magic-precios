@@ -1,26 +1,37 @@
 
 
-## Hacer la landing de captacion de leads la pagina principal
+## Store Lead Form Answers
 
-### Cambio
+The form currently logs to console and redirects. There's no Supabase connected to this project, so we need to set up a backend to persist submissions.
 
-Actualmente `/` muestra el catalogo de productos y `/manual-profesional` muestra la landing de captacion de leads. El cambio es simple: intercambiar las rutas para que la landing del manual sea lo primero que vean los visitantes.
+### Approach: Lovable Cloud (Supabase)
 
-### Rutas resultantes
+1. **Enable Supabase via Lovable Cloud** — spin up a backend without needing an external account
 
-| Ruta | Contenido |
-|---|---|
-| `/` | Landing de captacion de leads (ManualProfesional) |
-| `/catalogo` | Catalogo de productos (Index) |
-| `/manual-confirmacion` | Confirmacion post-formulario |
+2. **Create `leads` table** with migration:
+   - `id` (uuid, PK)
+   - `created_at` (timestamptz)
+   - `full_name`, `email`, `phone`, `city`, `country` (text)
+   - `profession`, `specialty`, `practice_type`, `clinic_name`, `role`, `patients_per_month`, `main_intent` (text)
+   - `offers_peptides`, `uses_glp1` (boolean)
+   - `interests` (text array)
+   - `consent` (boolean)
+   - `lead_score` (integer)
+   - `lead_classification` (text — CALIENTE/TIBIO/FRIO)
+   - RLS: enable with insert-only policy for anonymous users, select for authenticated (future admin)
 
-### Archivo a modificar
+3. **Update `LeadForm.tsx`**
+   - Import Supabase client
+   - On submit, insert the form data + computed score/classification into the `leads` table
+   - Show error toast on failure
 
-**`src/App.tsx`** - Cambiar el elemento de la ruta `/` a `ManualProfesional` y mover `Index` a `/catalogo`.
+4. **Add Supabase client** (`src/integrations/supabase/client.ts`) — standard Lovable setup
 
-### Consideraciones
+### Files changed
+- **New migration**: Create `leads` table
+- **`src/integrations/supabase/client.ts`**: Supabase client init
+- **`src/components/leads/LeadForm.tsx`**: Insert to Supabase on submit
 
-- Los enlaces internos que apunten a `/manual-profesional` se actualizaran a `/`.
-- El enlace del hero "Descargar ahora" que apunta a `#formulario` seguira funcionando igual.
-- La pagina de confirmacion puede incluir un CTA hacia `/catalogo` para que los leads descubran los productos.
+### Viewing answers
+Once stored, you can view submissions directly in the Supabase dashboard (Table Editor → `leads`). If you want an in-app admin view, we can build that as a follow-up.
 
