@@ -98,12 +98,37 @@ const LeadForm = () => {
         email: data.email,
       });
 
-      // TODO: When Cloud is enabled, call edge function here
-      console.log("Lead submitted:", { ...data, score, classification });
+      const { error } = await supabase.from("leads").insert({
+        full_name: data.full_name,
+        email: data.email,
+        phone: data.phone,
+        city: data.city,
+        country: data.country,
+        profession: data.profession,
+        specialty: data.specialty || null,
+        practice_type: data.practice_type,
+        clinic_name: data.clinic_name || null,
+        role: data.role,
+        patients_per_month: data.patients_per_month,
+        offers_peptides: data.offers_peptides,
+        uses_glp1: data.uses_glp1,
+        interests: data.interests,
+        main_intent: data.main_intent,
+        consent: data.consent,
+        lead_score: score,
+        lead_classification: classification,
+      });
+
+      if (error) throw error;
 
       navigate("/manual-confirmacion");
-    } catch {
-      console.error("Error submitting lead");
+    } catch (err) {
+      console.error("Error submitting lead:", err);
+      toast({
+        title: "Error al enviar",
+        description: "Hubo un problema al guardar tus datos. Intenta de nuevo.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
