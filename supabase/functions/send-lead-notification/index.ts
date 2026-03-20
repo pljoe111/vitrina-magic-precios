@@ -44,7 +44,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'Alchem Leads <onboarding@resend.dev>',
-        to: ['leads@alchem.mx'],
+        to: ['info@alchem.is'],
         subject: `[${lead_classification}] Nuevo lead: ${full_name}`,
         html,
       }),
