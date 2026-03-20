@@ -294,4 +294,25 @@ export const testResults: TestResult[] = [
     ],
     labPartnerUrl: "https://krauseanalytical.com/",
   },
+  {
+    id: "tr-014",
+    productId: "tirzepatide",
+    productName: "Tirzepatide 60mg",
+    batchNumber: "TZP-60-LYO-B01-2510",
+    lotNumber: "TZP-60-LYO-B01-2510",
+    testDate: "2025-12-26",
+    expDate: "12/2030",
+    purity: 99.4,
+    potency: "67.6mg (112.7%)",
+    contaminants: "None detected",
+    sterility: "Pass",
+    endotoxins: "Pass",
+    certificates: [
+      {
+        label: "Purity/Potency (BTLabs)",
+        link: "/certificates/COA-Tirzepatide-TZP-60-LYO-B01-2510.pdf",
+      },
+    ],
+    labPartnerUrl: "https://btlabtesting.com/",
+  },
 ];
