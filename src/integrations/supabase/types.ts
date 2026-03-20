@@ -63,6 +63,7 @@ export type Database = {
           role: string
           specialty: string | null
           uses_glp1: boolean
+          whatsapp: string | null
         }
         Insert: {
           city: string
@@ -85,6 +86,7 @@ export type Database = {
           role: string
           specialty?: string | null
           uses_glp1?: boolean
+          whatsapp?: string | null
         }
         Update: {
           city?: string
@@ -107,6 +109,7 @@ export type Database = {
           role?: string
           specialty?: string | null
           uses_glp1?: boolean
+          whatsapp?: string | null
         }
         Relationships: []
       }
