@@ -33,7 +33,55 @@ type SavedQuote = { id: string; client_name: string; title: string; updated_at: 
 
 const QuoteGenerator = () => {
   const [data, setData] = useState<QuoteData>(initialData);
+  const [savedQuotes, setSavedQuotes] = useState<SavedQuote[]>([]);
+  const [currentQuoteId, setCurrentQuoteId] = useState<string | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+
+  const fetchSavedQuotes = useCallback(async () => {
+    const { data: rows } = await supabase
+      .from("quotes")
+      .select("id, client_name, title, updated_at")
+      .order("updated_at", { ascending: false });
+    if (rows) setSavedQuotes(rows);
+  }, []);
+
+  useEffect(() => { fetchSavedQuotes(); }, [fetchSavedQuotes]);
+
+  const handleSaveCloud = useCallback(async () => {
+    const payload = { client_name: data.clientName, title: data.title, data: data as any };
+    if (currentQuoteId) {
+      await supabase.from("quotes").update({ ...payload, updated_at: new Date().toISOString() }).eq("id", currentQuoteId);
+    } else {
+      const { data: row } = await supabase.from("quotes").insert(payload).select("id").single();
+      if (row) setCurrentQuoteId(row.id);
+    }
+    await fetchSavedQuotes();
+    toast({ title: "✓", description: data.lang === "es" ? "Cotización guardada" : "Quote saved" });
+  }, [data, currentQuoteId, fetchSavedQuotes]);
+
+  const handleLoadQuote = useCallback(async (id: string) => {
+    const { data: row } = await supabase.from("quotes").select("id, data").eq("id", id).single();
+    if (row) {
+      const loaded = row.data as any as QuoteData;
+      if (loaded.validityDate) loaded.validityDate = new Date(loaded.validityDate);
+      if (!loaded.title) loaded.title = defaultTitle[loaded.lang || "es"];
+      setData(loaded);
+      setCurrentQuoteId(row.id);
+      toast({ title: "✓", description: data.lang === "es" ? "Cotización cargada" : "Quote loaded" });
+    }
+  }, [data.lang]);
+
+  const handleNewQuote = useCallback(() => {
+    setData(initialData);
+    setCurrentQuoteId(null);
+  }, []);
+
+  const handleDeleteQuote = useCallback(async (id: string) => {
+    await supabase.from("quotes").delete().eq("id", id);
+    if (currentQuoteId === id) { setCurrentQuoteId(null); setData(initialData); }
+    await fetchSavedQuotes();
+    toast({ title: "✓", description: data.lang === "es" ? "Cotización eliminada" : "Quote deleted" });
+  }, [currentQuoteId, fetchSavedQuotes, data.lang]);
 
   const capture = useCallback(async () => {
     if (!previewRef.current) return null;
