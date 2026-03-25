@@ -8,7 +8,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
-import { CalendarIcon, Plus, Trash2, Languages, Copy, Download, Upload } from "lucide-react";
+import { CalendarIcon, Plus, Trash2, Languages, Copy, Download, Upload, Save, FilePlus, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   QuoteData,
@@ -18,7 +18,10 @@ import {
   generateId,
   defaultConditions,
   defaultGuarantee,
+  defaultTitle,
 } from "./types";
+
+type SavedQuote = { id: string; client_name: string; title: string; updated_at: string };
 
 interface QuoteEditorProps {
   data: QuoteData;
@@ -29,9 +32,16 @@ interface QuoteEditorProps {
   onExportJson: () => void;
   onImportJson: () => void;
   onPrint: () => void;
+  onSaveCloud: () => void;
+  onLoadQuote: (id: string) => void;
+  onNewQuote: () => void;
+  onDeleteQuote: (id: string) => void;
+  savedQuotes: SavedQuote[];
+  currentQuoteId: string | null;
 }
 
-const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, onExportJson, onImportJson, onPrint }: QuoteEditorProps) => {
+const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, onExportJson, onImportJson, onPrint, onSaveCloud, onLoadQuote, onNewQuote, onDeleteQuote, savedQuotes, currentQuoteId }: QuoteEditorProps) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const update = (partial: Partial<QuoteData>) => onChange({ ...data, ...partial });
   const t = data.lang === "es"
     ? { client: "Cliente", validity: "Válido hasta", catalog: "Catálogo de Productos", productName: "Nombre del producto", addProduct: "Agregar producto", size: "Tamaño (mg)", price: "Precio / vial", addSize: "Agregar tamaño", currentOrder: "Pedido Actual", product: "Producto", vialSize: "Tamaño vial", qty: "Cantidad", priceVial: "Precio/vial", proposals: "Propuestas", proposalName: "Nombre propuesta", addProposal: "Agregar propuesta", conditions: "Condiciones", guarantee: "Garantía de Calidad", exportPdf: "Exportar PDF", exportJpg: "Exportar JPG", print: "Imprimir", lang: "Idioma", na: "N/A", selectProduct: "Seleccionar producto", selectSize: "Seleccionar tamaño" }
@@ -109,6 +119,7 @@ const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, on
             const newLang = data.lang === "es" ? "en" : "es";
             update({
               lang: newLang,
+              title: data.title === defaultTitle[data.lang] ? defaultTitle[newLang] : data.title,
               conditions: data.conditions === defaultConditions[data.lang] ? defaultConditions[newLang] : data.conditions,
               guarantee: data.guarantee === defaultGuarantee[data.lang] ? defaultGuarantee[newLang] : data.guarantee,
             });
@@ -119,8 +130,57 @@ const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, on
         </Button>
       </div>
 
-      {/* Client + validity */}
+      {/* Cloud save/load */}
       <Card className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground">{data.lang === "es" ? "Cotizaciones guardadas" : "Saved quotes"}</h3>
+          <div className="flex gap-1">
+            <Button size="sm" variant="outline" onClick={onNewQuote}>
+              <FilePlus className="h-4 w-4" />
+            </Button>
+            <Button size="sm" onClick={onSaveCloud}>
+              <Save className="h-4 w-4 mr-1" /> {data.lang === "es" ? "Guardar" : "Save"}
+            </Button>
+          </div>
+        </div>
+        <div className="relative">
+          <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            className="pl-7 h-8 text-sm"
+            placeholder={data.lang === "es" ? "Buscar cotización..." : "Search quote..."}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        {savedQuotes.filter(q => !searchQuery || q.client_name.toLowerCase().includes(searchQuery.toLowerCase()) || q.title.toLowerCase().includes(searchQuery.toLowerCase())).length > 0 && (
+          <div className="max-h-32 overflow-y-auto space-y-1">
+            {savedQuotes
+              .filter(q => !searchQuery || q.client_name.toLowerCase().includes(searchQuery.toLowerCase()) || q.title.toLowerCase().includes(searchQuery.toLowerCase()))
+              .map(q => (
+                <div
+                  key={q.id}
+                  className={cn("flex items-center justify-between px-2 py-1.5 rounded text-xs cursor-pointer hover:bg-muted", currentQuoteId === q.id && "bg-muted ring-1 ring-primary")}
+                  onClick={() => onLoadQuote(q.id)}
+                >
+                  <div className="truncate flex-1">
+                    <span className="font-medium">{q.client_name || q.title || "Sin nombre"}</span>
+                    <span className="text-muted-foreground ml-1">· {new Date(q.updated_at).toLocaleDateString()}</span>
+                  </div>
+                  <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive" onClick={(e) => { e.stopPropagation(); onDeleteQuote(q.id); }}>
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+          </div>
+        )}
+      </Card>
+
+      {/* Client + validity + title */}
+      <Card className="p-4 space-y-3">
+        <div className="space-y-2">
+          <Label>{data.lang === "es" ? "Título del documento" : "Document title"}</Label>
+          <Input value={data.title} onChange={(e) => update({ title: e.target.value })} placeholder={defaultTitle[data.lang]} />
+        </div>
         <div className="space-y-2">
           <Label>{t.client}</Label>
           <Input value={data.clientName} onChange={(e) => update({ clientName: e.target.value })} placeholder="Dr. García" />
