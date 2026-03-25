@@ -107,14 +107,16 @@ const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, on
 
   const allVariants = selectedProduct?.variants || [];
 
+  const filteredQuotes = savedQuotes.filter(q => !searchQuery || q.client_name.toLowerCase().includes(searchQuery.toLowerCase()) || q.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
   return (
-    <div className="space-y-6 p-4 overflow-y-auto h-full">
-      {/* Language toggle */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-foreground">{t.lang}</h2>
+    <div className="space-y-5 p-5 overflow-y-auto h-full">
+      {/* Top bar: language + new/save */}
+      <div className="flex items-center gap-2">
         <Button
           variant="outline"
           size="sm"
+          className="rounded-full text-xs"
           onClick={() => {
             const newLang = data.lang === "es" ? "en" : "es";
             update({
@@ -125,55 +127,52 @@ const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, on
             });
           }}
         >
-          <Languages className="h-4 w-4 mr-1" />
-          {data.lang === "es" ? "English" : "Español"}
+          <Languages className="h-3.5 w-3.5 mr-1" />
+          {data.lang === "es" ? "EN" : "ES"}
+        </Button>
+        <div className="flex-1" />
+        <Button size="sm" variant="ghost" className="text-xs" onClick={onNewQuote}>
+          <FilePlus className="h-3.5 w-3.5 mr-1" /> {data.lang === "es" ? "Nuevo" : "New"}
+        </Button>
+        <Button size="sm" className="text-xs rounded-full" onClick={onSaveCloud}>
+          <Save className="h-3.5 w-3.5 mr-1" /> {data.lang === "es" ? "Guardar" : "Save"}
         </Button>
       </div>
 
-      {/* Cloud save/load */}
-      <Card className="p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-foreground">{data.lang === "es" ? "Cotizaciones guardadas" : "Saved quotes"}</h3>
-          <div className="flex gap-1">
-            <Button size="sm" variant="outline" onClick={onNewQuote}>
-              <FilePlus className="h-4 w-4" />
-            </Button>
-            <Button size="sm" onClick={onSaveCloud}>
-              <Save className="h-4 w-4 mr-1" /> {data.lang === "es" ? "Guardar" : "Save"}
-            </Button>
-          </div>
-        </div>
+      {/* Saved quotes browser */}
+      <div className="space-y-2">
         <div className="relative">
-          <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            className="pl-7 h-8 text-sm"
-            placeholder={data.lang === "es" ? "Buscar cotización..." : "Search quote..."}
+            className="pl-9 h-9 rounded-full bg-muted/50 border-0 focus-visible:ring-1 text-sm"
+            placeholder={data.lang === "es" ? "Buscar cotizaciones guardadas..." : "Search saved quotes..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        {savedQuotes.filter(q => !searchQuery || q.client_name.toLowerCase().includes(searchQuery.toLowerCase()) || q.title.toLowerCase().includes(searchQuery.toLowerCase())).length > 0 && (
-          <div className="max-h-32 overflow-y-auto space-y-1">
-            {savedQuotes
-              .filter(q => !searchQuery || q.client_name.toLowerCase().includes(searchQuery.toLowerCase()) || q.title.toLowerCase().includes(searchQuery.toLowerCase()))
-              .map(q => (
-                <div
-                  key={q.id}
-                  className={cn("flex items-center justify-between px-2 py-1.5 rounded text-xs cursor-pointer hover:bg-muted", currentQuoteId === q.id && "bg-muted ring-1 ring-primary")}
-                  onClick={() => onLoadQuote(q.id)}
-                >
-                  <div className="truncate flex-1">
-                    <span className="font-medium">{q.client_name || q.title || "Sin nombre"}</span>
-                    <span className="text-muted-foreground ml-1">· {new Date(q.updated_at).toLocaleDateString()}</span>
-                  </div>
-                  <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive" onClick={(e) => { e.stopPropagation(); onDeleteQuote(q.id); }}>
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+        {filteredQuotes.length > 0 && (
+          <div className="max-h-36 overflow-y-auto rounded-lg border border-border/60 divide-y divide-border/40">
+            {filteredQuotes.map(q => (
+              <div
+                key={q.id}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 text-sm cursor-pointer transition-colors hover:bg-muted/60",
+                  currentQuoteId === q.id && "bg-primary/5 border-l-2 border-l-primary"
+                )}
+                onClick={() => onLoadQuote(q.id)}
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground truncate text-xs">{q.client_name || q.title || "Sin nombre"}</p>
+                  <p className="text-[10px] text-muted-foreground">{new Date(q.updated_at).toLocaleDateString()}</p>
                 </div>
-              ))}
+                <Button size="sm" variant="ghost" className="h-6 w-6 p-0 shrink-0 text-muted-foreground hover:text-destructive" onClick={(e) => { e.stopPropagation(); onDeleteQuote(q.id); }}>
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
           </div>
         )}
-      </Card>
+      </div>
 
       {/* Client + validity + title */}
       <Card className="p-4 space-y-3">
@@ -374,25 +373,26 @@ const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, on
         </div>
       </Card>
 
-      {/* Export */}
-      <div className="space-y-2">
-        <div className="flex gap-2">
-          <Button onClick={onExportPdf} className="flex-1">{t.exportPdf}</Button>
-          <Button onClick={onExportJpg} variant="outline" className="flex-1">{t.exportJpg}</Button>
-          <Button onClick={onPrint} variant="outline" className="flex-1">{t.print}</Button>
+      {/* Export toolbar */}
+      <Card className="p-4 space-y-3">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{data.lang === "es" ? "Exportar" : "Export"}</h3>
+        <div className="grid grid-cols-3 gap-2">
+          <Button onClick={onExportPdf} size="sm" className="text-xs">{t.exportPdf}</Button>
+          <Button onClick={onExportJpg} size="sm" variant="secondary" className="text-xs">{t.exportJpg}</Button>
+          <Button onClick={onPrint} size="sm" variant="secondary" className="text-xs">{t.print}</Button>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={onCopyImage} variant="outline" className="flex-1">
-            <Copy className="h-4 w-4 mr-1" /> {data.lang === "es" ? "Copiar imagen" : "Copy image"}
+        <div className="grid grid-cols-3 gap-2">
+          <Button onClick={onCopyImage} size="sm" variant="outline" className="text-xs">
+            <Copy className="h-3.5 w-3.5 mr-1" /> {data.lang === "es" ? "Copiar" : "Copy"}
           </Button>
-          <Button onClick={onExportJson} variant="outline" className="flex-1">
-            <Download className="h-4 w-4 mr-1" /> JSON
+          <Button onClick={onExportJson} size="sm" variant="outline" className="text-xs">
+            <Download className="h-3.5 w-3.5 mr-1" /> JSON
           </Button>
-          <Button onClick={onImportJson} variant="outline" className="flex-1">
-            <Upload className="h-4 w-4 mr-1" /> {data.lang === "es" ? "Importar" : "Import"}
+          <Button onClick={onImportJson} size="sm" variant="outline" className="text-xs">
+            <Upload className="h-3.5 w-3.5 mr-1" /> {data.lang === "es" ? "Importar" : "Import"}
           </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };
