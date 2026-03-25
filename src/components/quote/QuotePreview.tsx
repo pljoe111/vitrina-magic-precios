@@ -12,8 +12,8 @@ const fmt = (n: number) => n.toLocaleString("es-MX", { minimumFractionDigits: 2,
 const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, ref) => {
   const { lang } = data;
   const t = lang === "es"
-    ? { title: "Cotización Farmacéutica", validUntil: "Válido hasta", priceTable: "Lista de Precios", size: "Tamaño", priceVial: "Precio / Vial", na: "N/A", analysis: "Análisis Comparativo", current: "Actual", proposed: "Propuesta", vials: "Viales", vialSize: "Tamaño vial", totalMg: "Total mg", totalCost: "Costo total", unitCost: "Costo/mg", savings: "Ahorro", sameMg: "Mismo contenido total", lowerUnit: "Menor costo unitario", conditions: "Condiciones", guarantee: "Garantía de Calidad", confidential: "CONFIDENCIAL — Este documento contiene información comercial privilegiada destinada exclusivamente al destinatario indicado.", noProduct: "Sin producto seleccionado" }
-    : { title: "Pharmaceutical Quote", validUntil: "Valid until", priceTable: "Price List", size: "Size", priceVial: "Price / Vial", na: "N/A", analysis: "Comparative Analysis", current: "Current", proposed: "Proposal", vials: "Vials", vialSize: "Vial size", totalMg: "Total mg", totalCost: "Total cost", unitCost: "Cost/mg", savings: "Savings", sameMg: "Same total content", lowerUnit: "Lower unit cost", conditions: "Conditions", guarantee: "Quality Guarantee", confidential: "CONFIDENTIAL — This document contains privileged commercial information intended exclusively for the indicated recipient.", noProduct: "No product selected" };
+    ? { title: "Cotización Farmacéutica", validUntil: "Válido hasta", priceTable: "Lista de Precios", size: "Tamaño", priceVial: "Precio / Vial", na: "N/A", analysis: "Análisis Comparativo", current: "Actual", proposed: "Propuesta", vials: "Viales", vialSize: "Tamaño vial", totalMg: "Total mg", totalCost: "Costo total", unitCost: "Costo/mg", savings: "Ahorro", sameMg: "Mismo contenido total", lowerUnit: "Menor costo unitario", moreMgLessCost: "Más producto, menor costo", conditions: "Condiciones", guarantee: "Garantía de Calidad", confidential: "CONFIDENCIAL — Este documento contiene información comercial privilegiada destinada exclusivamente al destinatario indicado.", noProduct: "Sin producto seleccionado" }
+    : { title: "Pharmaceutical Quote", validUntil: "Valid until", priceTable: "Price List", size: "Size", priceVial: "Price / Vial", na: "N/A", analysis: "Comparative Analysis", current: "Current", proposed: "Proposal", vials: "Vials", vialSize: "Vial size", totalMg: "Total mg", totalCost: "Total cost", unitCost: "Cost/mg", savings: "Savings", sameMg: "Same total content", lowerUnit: "Lower unit cost", moreMgLessCost: "More product, lower cost", conditions: "Conditions", guarantee: "Quality Guarantee", confidential: "CONFIDENTIAL — This document contains privileged commercial information intended exclusively for the indicated recipient.", noProduct: "No product selected" };
 
   const selectedProduct = data.catalog.find((p) => p.id === data.currentOrder.productId);
   const currentVariant = selectedProduct?.variants.find((v) => v.id === data.currentOrder.variantId);
@@ -81,6 +81,7 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
           const savingsAmount = currentTotalCost - propTotalCost;
           const sameMg = propTotalMg === currentTotalMg && currentTotalMg > 0;
           const lowerUnit = propUnitCost < currentUnitCost && currentUnitCost > 0 && propUnitCost > 0;
+          const moreMgLessCost = propTotalMg > currentTotalMg && propTotalCost < currentTotalCost && currentTotalMg > 0;
 
           return (
             <div key={prop.id} className="border rounded-lg overflow-hidden" style={{ borderColor: "#d1e8e4" }}>
@@ -123,6 +124,11 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
                 {lowerUnit && (
                   <span className="text-[9px] px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "#e0f5f0", color: "#1a7a6d" }}>
                     ✓ {t.lowerUnit}
+                  </span>
+                )}
+                {moreMgLessCost && (
+                  <span className="text-[9px] px-2 py-0.5 rounded-full font-bold text-white" style={{ backgroundColor: "#e76f51" }}>
+                    🔥 {t.moreMgLessCost}
                   </span>
                 )}
                 {savingsAmount > 0 && (
