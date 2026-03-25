@@ -126,6 +126,11 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
                     ✓ {t.lowerUnit}
                   </span>
                 )}
+                {moreMgLessCost && (
+                  <span className="text-[9px] px-2 py-0.5 rounded-full font-bold text-white" style={{ backgroundColor: "#e76f51" }}>
+                    🔥 {t.moreMgLessCost}
+                  </span>
+                )}
                 {savingsAmount > 0 && (
                   <span className="text-[9px] px-2 py-0.5 rounded-full font-bold text-white" style={{ backgroundColor: "#2a9d8f" }}>
                     {t.savings}: MX$ {fmt(savingsAmount)}
