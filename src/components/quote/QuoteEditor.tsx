@@ -130,8 +130,57 @@ const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, on
         </Button>
       </div>
 
-      {/* Client + validity */}
+      {/* Cloud save/load */}
       <Card className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-foreground">{data.lang === "es" ? "Cotizaciones guardadas" : "Saved quotes"}</h3>
+          <div className="flex gap-1">
+            <Button size="sm" variant="outline" onClick={onNewQuote}>
+              <FilePlus className="h-4 w-4" />
+            </Button>
+            <Button size="sm" onClick={onSaveCloud}>
+              <Save className="h-4 w-4 mr-1" /> {data.lang === "es" ? "Guardar" : "Save"}
+            </Button>
+          </div>
+        </div>
+        <div className="relative">
+          <Search className="absolute left-2 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+          <Input
+            className="pl-7 h-8 text-sm"
+            placeholder={data.lang === "es" ? "Buscar cotización..." : "Search quote..."}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        {savedQuotes.filter(q => !searchQuery || q.client_name.toLowerCase().includes(searchQuery.toLowerCase()) || q.title.toLowerCase().includes(searchQuery.toLowerCase())).length > 0 && (
+          <div className="max-h-32 overflow-y-auto space-y-1">
+            {savedQuotes
+              .filter(q => !searchQuery || q.client_name.toLowerCase().includes(searchQuery.toLowerCase()) || q.title.toLowerCase().includes(searchQuery.toLowerCase()))
+              .map(q => (
+                <div
+                  key={q.id}
+                  className={cn("flex items-center justify-between px-2 py-1.5 rounded text-xs cursor-pointer hover:bg-muted", currentQuoteId === q.id && "bg-muted ring-1 ring-primary")}
+                  onClick={() => onLoadQuote(q.id)}
+                >
+                  <div className="truncate flex-1">
+                    <span className="font-medium">{q.client_name || q.title || "Sin nombre"}</span>
+                    <span className="text-muted-foreground ml-1">· {new Date(q.updated_at).toLocaleDateString()}</span>
+                  </div>
+                  <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive" onClick={(e) => { e.stopPropagation(); onDeleteQuote(q.id); }}>
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+          </div>
+        )}
+      </Card>
+
+      {/* Client + validity + title */}
+      <Card className="p-4 space-y-3">
+        <div className="space-y-2">
+          <Label>{data.lang === "es" ? "Título del documento" : "Document title"}</Label>
+          <Input value={data.title} onChange={(e) => update({ title: e.target.value })} placeholder={defaultTitle[data.lang]} />
+        </div>
         <div className="space-y-2">
           <Label>{t.client}</Label>
           <Input value={data.clientName} onChange={(e) => update({ clientName: e.target.value })} placeholder="Dr. García" />
