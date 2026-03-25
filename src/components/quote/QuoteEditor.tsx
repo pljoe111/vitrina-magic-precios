@@ -315,10 +315,23 @@ const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, on
       </Card>
 
       {/* Export */}
-      <div className="flex gap-2">
-        <Button onClick={onExportPdf} className="flex-1">{t.exportPdf}</Button>
-        <Button onClick={onExportJpg} variant="outline" className="flex-1">{t.exportJpg}</Button>
-        <Button onClick={onPrint} variant="outline" className="flex-1">{t.print}</Button>
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <Button onClick={onExportPdf} className="flex-1">{t.exportPdf}</Button>
+          <Button onClick={onExportJpg} variant="outline" className="flex-1">{t.exportJpg}</Button>
+          <Button onClick={onPrint} variant="outline" className="flex-1">{t.print}</Button>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={onCopyImage} variant="outline" className="flex-1">
+            <Copy className="h-4 w-4 mr-1" /> {data.lang === "es" ? "Copiar imagen" : "Copy image"}
+          </Button>
+          <Button onClick={onExportJson} variant="outline" className="flex-1">
+            <Download className="h-4 w-4 mr-1" /> JSON
+          </Button>
+          <Button onClick={onImportJson} variant="outline" className="flex-1">
+            <Upload className="h-4 w-4 mr-1" /> {data.lang === "es" ? "Importar" : "Import"}
+          </Button>
+        </div>
       </div>
     </div>
   );
