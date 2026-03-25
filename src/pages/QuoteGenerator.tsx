@@ -100,20 +100,20 @@ const QuoteGenerator = () => {
     input.click();
   }, []);
 
-  const handlePrint = useCallback(() => {
-    const el = previewRef.current;
-    if (!el) return;
+  const handlePrint = useCallback(async () => {
+    const canvas = await capture();
+    if (!canvas) return;
+    const imgData = canvas.toDataURL("image/png");
     const win = window.open("", "_blank");
     if (!win) return;
     win.document.write(`
       <html><head><title>Cotización</title>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-      <style>body{margin:0;font-family:'Inter',sans-serif;}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>
-      </head><body>${el.innerHTML}</body></html>
+      <style>body{margin:0;display:flex;justify-content:center;}img{width:100%;max-width:210mm;}@media print{body{margin:0;}img{width:100%;max-width:none;}}</style>
+      </head><body><img src="${imgData}" /></body></html>
     `);
     win.document.close();
     win.onload = () => { win.print(); win.close(); };
-  }, []);
+  }, [capture]);
 
   return (
     <div className="h-screen flex bg-muted/30">
