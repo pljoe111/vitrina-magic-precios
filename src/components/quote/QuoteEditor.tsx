@@ -8,7 +8,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
-import { CalendarIcon, Plus, Trash2, Languages } from "lucide-react";
+import { CalendarIcon, Plus, Trash2, Languages, Copy, Download, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   QuoteData,
@@ -25,10 +25,13 @@ interface QuoteEditorProps {
   onChange: (data: QuoteData) => void;
   onExportPdf: () => void;
   onExportJpg: () => void;
+  onCopyImage: () => void;
+  onExportJson: () => void;
+  onImportJson: () => void;
   onPrint: () => void;
 }
 
-const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onPrint }: QuoteEditorProps) => {
+const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, onExportJson, onImportJson, onPrint }: QuoteEditorProps) => {
   const update = (partial: Partial<QuoteData>) => onChange({ ...data, ...partial });
   const t = data.lang === "es"
     ? { client: "Cliente", validity: "Válido hasta", catalog: "Catálogo de Productos", productName: "Nombre del producto", addProduct: "Agregar producto", size: "Tamaño (mg)", price: "Precio / vial", addSize: "Agregar tamaño", currentOrder: "Pedido Actual", product: "Producto", vialSize: "Tamaño vial", qty: "Cantidad", priceVial: "Precio/vial", proposals: "Propuestas", proposalName: "Nombre propuesta", addProposal: "Agregar propuesta", conditions: "Condiciones", guarantee: "Garantía de Calidad", exportPdf: "Exportar PDF", exportJpg: "Exportar JPG", print: "Imprimir", lang: "Idioma", na: "N/A", selectProduct: "Seleccionar producto", selectSize: "Seleccionar tamaño" }
@@ -312,10 +315,23 @@ const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onPrint }: Quot
       </Card>
 
       {/* Export */}
-      <div className="flex gap-2">
-        <Button onClick={onExportPdf} className="flex-1">{t.exportPdf}</Button>
-        <Button onClick={onExportJpg} variant="outline" className="flex-1">{t.exportJpg}</Button>
-        <Button onClick={onPrint} variant="outline" className="flex-1">{t.print}</Button>
+      <div className="space-y-2">
+        <div className="flex gap-2">
+          <Button onClick={onExportPdf} className="flex-1">{t.exportPdf}</Button>
+          <Button onClick={onExportJpg} variant="outline" className="flex-1">{t.exportJpg}</Button>
+          <Button onClick={onPrint} variant="outline" className="flex-1">{t.print}</Button>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={onCopyImage} variant="outline" className="flex-1">
+            <Copy className="h-4 w-4 mr-1" /> {data.lang === "es" ? "Copiar imagen" : "Copy image"}
+          </Button>
+          <Button onClick={onExportJson} variant="outline" className="flex-1">
+            <Download className="h-4 w-4 mr-1" /> JSON
+          </Button>
+          <Button onClick={onImportJson} variant="outline" className="flex-1">
+            <Upload className="h-4 w-4 mr-1" /> {data.lang === "es" ? "Importar" : "Import"}
+          </Button>
+        </div>
       </div>
     </div>
   );

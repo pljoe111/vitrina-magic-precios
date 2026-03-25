@@ -4,6 +4,7 @@ import jsPDF from "jspdf";
 import QuoteEditor from "@/components/quote/QuoteEditor";
 import QuotePreview from "@/components/quote/QuotePreview";
 import { QuoteData, defaultConditions, defaultGuarantee, generateId } from "@/components/quote/types";
+import { toast } from "@/hooks/use-toast";
 
 const initialData: QuoteData = {
   clientName: "",
@@ -55,6 +56,50 @@ const QuoteGenerator = () => {
     link.click();
   }, [capture, data.clientName]);
 
+  const handleCopyImage = useCallback(async () => {
+    const canvas = await capture();
+    if (!canvas) return;
+    try {
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        toast({ title: "✓", description: "Imagen copiada al portapapeles" });
+      }, "image/png");
+    } catch {
+      toast({ title: "Error", description: "No se pudo copiar la imagen", variant: "destructive" });
+    }
+  }, [capture]);
+
+  const handleExportJson = useCallback(() => {
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const link = document.createElement("a");
+    link.download = `cotizacion-${data.clientName || "alchem"}.json`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }, [data]);
+
+  const handleImportJson = useCallback(() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const imported = JSON.parse(text) as QuoteData;
+        if (imported.validityDate) imported.validityDate = new Date(imported.validityDate);
+        setData(imported);
+        toast({ title: "✓", description: "Cotización importada" });
+      } catch {
+        toast({ title: "Error", description: "Archivo JSON inválido", variant: "destructive" });
+      }
+    };
+    input.click();
+  }, []);
+
   const handlePrint = useCallback(() => {
     const el = previewRef.current;
     if (!el) return;
@@ -79,6 +124,9 @@ const QuoteGenerator = () => {
           onChange={setData}
           onExportPdf={handleExportPdf}
           onExportJpg={handleExportJpg}
+          onCopyImage={handleCopyImage}
+          onExportJson={handleExportJson}
+          onImportJson={handleImportJson}
           onPrint={handlePrint}
         />
       </div>
