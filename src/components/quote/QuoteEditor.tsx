@@ -18,7 +18,10 @@ import {
   generateId,
   defaultConditions,
   defaultGuarantee,
+  defaultTitle,
 } from "./types";
+
+type SavedQuote = { id: string; client_name: string; title: string; updated_at: string };
 
 interface QuoteEditorProps {
   data: QuoteData;
