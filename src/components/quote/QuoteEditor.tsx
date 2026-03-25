@@ -8,7 +8,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
-import { CalendarIcon, Plus, Trash2, Languages, Copy, Download, Upload } from "lucide-react";
+import { CalendarIcon, Plus, Trash2, Languages, Copy, Download, Upload, Save, FilePlus, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   QuoteData,
