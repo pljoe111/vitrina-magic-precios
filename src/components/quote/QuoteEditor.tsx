@@ -119,6 +119,7 @@ const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, on
             const newLang = data.lang === "es" ? "en" : "es";
             update({
               lang: newLang,
+              title: data.title === defaultTitle[data.lang] ? defaultTitle[newLang] : data.title,
               conditions: data.conditions === defaultConditions[data.lang] ? defaultConditions[newLang] : data.conditions,
               guarantee: data.guarantee === defaultGuarantee[data.lang] ? defaultGuarantee[newLang] : data.guarantee,
             });
