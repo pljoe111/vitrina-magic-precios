@@ -117,22 +117,22 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
               {/* Badges */}
               <div className="px-4 pb-3 flex flex-wrap gap-2">
                 {sameMg && (
-                  <span className="text-[9px] px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "#e0f5f0", color: "#1a7a6d" }}>
+                  <span style={{ fontSize: "9px", padding: "2px 8px", borderRadius: "3px", fontWeight: 500, backgroundColor: "#e0f5f0", color: "#1a7a6d", display: "inline-block" }}>
                     ✓ {t.sameMg}
                   </span>
                 )}
                 {lowerUnit && (
-                  <span className="text-[9px] px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "#e0f5f0", color: "#1a7a6d" }}>
+                  <span style={{ fontSize: "9px", padding: "2px 8px", borderRadius: "3px", fontWeight: 500, backgroundColor: "#e0f5f0", color: "#1a7a6d", display: "inline-block" }}>
                     ✓ {t.lowerUnit}
                   </span>
                 )}
                 {moreMgLessCost && (
-                  <span className="text-[9px] px-2 py-0.5 rounded-full font-bold text-white" style={{ backgroundColor: "#e76f51" }}>
+                  <span style={{ fontSize: "9px", padding: "2px 8px", borderRadius: "3px", fontWeight: 700, backgroundColor: "#e76f51", color: "#ffffff", display: "inline-block" }}>
                     🔥 {t.moreMgLessCost}
                   </span>
                 )}
                 {savingsAmount > 0 && (
-                  <span className="text-[9px] px-2 py-0.5 rounded-full font-bold text-white" style={{ backgroundColor: "#2a9d8f" }}>
+                  <span style={{ fontSize: "9px", padding: "2px 8px", borderRadius: "3px", fontWeight: 700, backgroundColor: "#2a9d8f", color: "#ffffff", display: "inline-block" }}>
                     {t.savings}: MX$ {fmt(savingsAmount)}
                   </span>
                 )}
