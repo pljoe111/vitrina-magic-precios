@@ -8,6 +8,7 @@ import ManualProfesional from "./pages/ManualProfesional";
 import ManualConfirmacion from "./pages/ManualConfirmacion";
 import TestResults from "./pages/TestResults";
 import Calculadora from "./pages/Calculadora";
+import AlchemAdmin from "./pages/AlchemAdmin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/test-results" element={<TestResults />} />
           <Route path="/calculadora" element={<Calculadora />} />
           <Route path="/manual-confirmacion" element={<ManualConfirmacion />} />
+          <Route path="/alchem-admin" element={<AlchemAdmin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
