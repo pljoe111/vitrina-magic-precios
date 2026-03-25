@@ -31,7 +31,7 @@ interface QuoteEditorProps {
   onPrint: () => void;
 }
 
-const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onPrint }: QuoteEditorProps) => {
+const QuoteEditor = ({ data, onChange, onExportPdf, onExportJpg, onCopyImage, onExportJson, onImportJson, onPrint }: QuoteEditorProps) => {
   const update = (partial: Partial<QuoteData>) => onChange({ ...data, ...partial });
   const t = data.lang === "es"
     ? { client: "Cliente", validity: "Válido hasta", catalog: "Catálogo de Productos", productName: "Nombre del producto", addProduct: "Agregar producto", size: "Tamaño (mg)", price: "Precio / vial", addSize: "Agregar tamaño", currentOrder: "Pedido Actual", product: "Producto", vialSize: "Tamaño vial", qty: "Cantidad", priceVial: "Precio/vial", proposals: "Propuestas", proposalName: "Nombre propuesta", addProposal: "Agregar propuesta", conditions: "Condiciones", guarantee: "Garantía de Calidad", exportPdf: "Exportar PDF", exportJpg: "Exportar JPG", print: "Imprimir", lang: "Idioma", na: "N/A", selectProduct: "Seleccionar producto", selectSize: "Seleccionar tamaño" }
