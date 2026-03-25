@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { CalendarIcon, Plus, Power, Trash2, Clock, LogOut, Eye, EyeOff } from "lucide-react";
+import { FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AccessCode = {
@@ -202,9 +204,16 @@ const AlchemAdmin = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-foreground">Gestión de Códigos de Acceso</h1>
-          <Button variant="ghost" size="sm" onClick={() => setIsAuthenticated(false)}>
-            <LogOut className="h-4 w-4 mr-2" /> Salir
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/alchem-admin/cotizador">
+                <FileText className="h-4 w-4 mr-2" /> Cotizador
+              </Link>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setIsAuthenticated(false)}>
+              <LogOut className="h-4 w-4 mr-2" /> Salir
+            </Button>
+          </div>
         </div>
 
         {/* Create New Code */}
