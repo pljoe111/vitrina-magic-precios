@@ -25,6 +25,9 @@ interface QuoteEditorProps {
   onChange: (data: QuoteData) => void;
   onExportPdf: () => void;
   onExportJpg: () => void;
+  onCopyImage: () => void;
+  onExportJson: () => void;
+  onImportJson: () => void;
   onPrint: () => void;
 }
 
