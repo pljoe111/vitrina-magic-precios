@@ -8,6 +8,7 @@ import ManualProfesional from "./pages/ManualProfesional";
 import ManualConfirmacion from "./pages/ManualConfirmacion";
 import TestResults from "./pages/TestResults";
 import Calculadora from "./pages/Calculadora";
+import AlchemAdmin from "./pages/AlchemAdmin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
