@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const initialData: QuoteData = {
   clientName: "",
+  title: defaultTitle.es,
   validityDate: undefined,
   catalog: [
     {
@@ -27,6 +28,8 @@ const initialData: QuoteData = {
   guarantee: defaultGuarantee.es,
   lang: "es",
 };
+
+type SavedQuote = { id: string; client_name: string; title: string; updated_at: string };
 
 const QuoteGenerator = () => {
   const [data, setData] = useState<QuoteData>(initialData);

@@ -27,6 +27,7 @@ export interface Proposal {
 
 export interface QuoteData {
   clientName: string;
+  title: string;
   validityDate: Date | undefined;
   catalog: CatalogProduct[];
   currentOrder: CurrentOrder;
@@ -35,6 +36,11 @@ export interface QuoteData {
   guarantee: string;
   lang: "es" | "en";
 }
+
+export const defaultTitle = {
+  es: "Cotización Farmacéutica",
+  en: "Pharmaceutical Quote",
+};
 
 export const defaultConditions = {
   es: `• Precios expresados en MX$ (pesos mexicanos), IVA incluido.\n• Cotización válida por el período indicado.\n• Envío gratuito en pedidos superiores a MX$10,000.\n• Pago mediante transferencia bancaria o tarjeta.\n• Entrega estimada: 3-5 días hábiles después de confirmación de pago.`,
