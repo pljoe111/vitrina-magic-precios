@@ -180,6 +180,12 @@ const QuoteGenerator = () => {
           onExportJson={handleExportJson}
           onImportJson={handleImportJson}
           onPrint={handlePrint}
+          onSaveCloud={handleSaveCloud}
+          onLoadQuote={handleLoadQuote}
+          onNewQuote={handleNewQuote}
+          onDeleteQuote={handleDeleteQuote}
+          savedQuotes={savedQuotes}
+          currentQuoteId={currentQuoteId}
         />
       </div>
       {/* Preview */}

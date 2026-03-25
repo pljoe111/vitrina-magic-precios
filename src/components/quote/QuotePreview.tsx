@@ -34,7 +34,7 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
           </div>
         </div>
         <div className="text-right">
-          <p className="text-sm font-semibold text-gray-800">{t.title}</p>
+          <p className="text-sm font-semibold text-gray-800">{data.title || t.title}</p>
           {data.clientName && <p className="text-gray-600">{data.clientName}</p>}
           {data.validityDate && (
             <p className="text-gray-500 text-[10px]">{t.validUntil}: {format(data.validityDate, "dd/MM/yyyy")}</p>
