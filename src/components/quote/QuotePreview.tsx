@@ -81,6 +81,7 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
           const savingsAmount = currentTotalCost - propTotalCost;
           const sameMg = propTotalMg === currentTotalMg && currentTotalMg > 0;
           const lowerUnit = propUnitCost < currentUnitCost && currentUnitCost > 0 && propUnitCost > 0;
+          const moreMgLessCost = propTotalMg > currentTotalMg && propTotalCost < currentTotalCost && currentTotalMg > 0;
 
           return (
             <div key={prop.id} className="border rounded-lg overflow-hidden" style={{ borderColor: "#d1e8e4" }}>
