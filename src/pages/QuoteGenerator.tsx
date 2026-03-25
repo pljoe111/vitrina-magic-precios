@@ -1,10 +1,11 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import QuoteEditor from "@/components/quote/QuoteEditor";
 import QuotePreview from "@/components/quote/QuotePreview";
-import { QuoteData, defaultConditions, defaultGuarantee, generateId } from "@/components/quote/types";
+import { QuoteData, defaultConditions, defaultGuarantee, defaultTitle, generateId } from "@/components/quote/types";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const initialData: QuoteData = {
   clientName: "",
