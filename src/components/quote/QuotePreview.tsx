@@ -12,8 +12,13 @@ const fmt = (n: number) => n.toLocaleString("es-MX", { minimumFractionDigits: 2,
 const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, ref) => {
   const { lang } = data;
   const t = lang === "es"
-    ? { title: "Cotización Farmacéutica", validUntil: "Válido hasta", priceTable: "Lista de Precios", size: "Tamaño", priceVial: "Precio / Vial", na: "N/A", analysis: "Análisis Comparativo", current: "Actual", proposed: "Propuesta", vials: "Viales", vialSize: "Tamaño vial", totalMg: "Total mg", totalCost: "Costo total", unitCost: "Costo/mg", savings: "Ahorro", sameMg: "Mismo contenido total", lowerUnit: "Menor costo unitario", moreMgLessCost: "Más producto, menor costo", summary: "Resumen de beneficios", conditions: "Condiciones", guarantee: "Garantía de Calidad", confidential: "CONFIDENCIAL — Este documento contiene información comercial privilegiada destinada exclusivamente al destinatario indicado.", noProduct: "Sin producto seleccionado" }
-    : { title: "Pharmaceutical Quote", validUntil: "Valid until", priceTable: "Price List", size: "Size", priceVial: "Price / Vial", na: "N/A", analysis: "Comparative Analysis", current: "Current", proposed: "Proposal", vials: "Vials", vialSize: "Vial size", totalMg: "Total mg", totalCost: "Total cost", unitCost: "Cost/mg", savings: "Savings", sameMg: "Same total content", lowerUnit: "Lower unit cost", moreMgLessCost: "More product, lower cost", summary: "Benefit summary", conditions: "Conditions", guarantee: "Quality Guarantee", confidential: "CONFIDENTIAL — This document contains privileged commercial information intended exclusively for the indicated recipient.", noProduct: "No product selected" };
+    ? { title: "Cotización Farmacéutica", validUntil: "Válido hasta", priceTable: "Lista de Precios", size: "Tamaño", priceVial: "Precio / Vial", na: "N/A", analysis: "Análisis Comparativo", current: "Actual", proposed: "Propuesta", vials: "Viales", vialSize: "Tamaño vial", totalMg: "Total mg", totalCost: "Costo total", unitCost: "Costo/mg", savings: "Ahorro", sameMg: "Mismo contenido total", lowerUnit: "Menor costo unitario", moreMgLessCost: "Más producto, menor costo", summary: "Resumen de beneficios", conditions: "Condiciones", guarantee: "Garantía de Calidad", noProduct: "Sin producto seleccionado" }
+    : { title: "Pharmaceutical Quote", validUntil: "Valid until", priceTable: "Price List", size: "Size", priceVial: "Price / Vial", na: "N/A", analysis: "Comparative Analysis", current: "Current", proposed: "Proposal", vials: "Vials", vialSize: "Vial size", totalMg: "Total mg", totalCost: "Total cost", unitCost: "Cost/mg", savings: "Savings", sameMg: "Same total content", lowerUnit: "Lower unit cost", moreMgLessCost: "More product, lower cost", summary: "Benefit summary", conditions: "Conditions", guarantee: "Quality Guarantee", noProduct: "No product selected" };
+
+  const clientLabel = data.clientName || (lang === "es" ? "el destinatario" : "the recipient");
+  const confidentialText = lang === "es"
+    ? `CONFIDENCIAL — Este documento es de uso exclusivo de ${clientLabel}. Su contenido constituye información comercial privilegiada. Queda estrictamente prohibida su reproducción, distribución o divulgación a terceros sin autorización escrita de Alchem. La recepción de este documento implica la aceptación de estas condiciones.`
+    : `CONFIDENTIAL — This document is for the exclusive use of ${clientLabel}. Its contents constitute privileged commercial information. Reproduction, distribution, or disclosure to third parties without written authorization from Alchem is strictly prohibited. Receipt of this document implies acceptance of these terms.`;
 
   const selectedProduct = data.catalog.find((p) => p.id === data.currentOrder.productId);
   const currentVariant = selectedProduct?.variants.find((v) => v.id === data.currentOrder.variantId);
@@ -159,8 +164,8 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
       </div>
 
       {/* Confidentiality bar */}
-      <div className="mx-10 mt-4 py-2 px-4 text-center text-[8px] text-gray-400 border-t" style={{ borderColor: "#d1e8e4" }}>
-        {t.confidential}
+      <div className="mx-10 mt-4 py-2 px-4 text-center text-[7px] text-gray-400 border-t leading-relaxed" style={{ borderColor: "#d1e8e4" }}>
+        {confidentialText}
       </div>
     </div>
   );
