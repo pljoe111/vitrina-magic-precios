@@ -10,14 +10,14 @@ interface QuotePreviewProps {
 const fmt = (n: number) => n.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const badgeBaseStyle: CSSProperties = {
-  fontSize: "10px",
-  lineHeight: "1",
-  minHeight: "18px",
+  fontSize: "11px",
+  lineHeight: "22px",
+  height: "22px",
   padding: "0 10px",
   borderRadius: "4px",
-  display: "inline-flex",
-  alignItems: "center",
+  display: "inline-block",
   whiteSpace: "nowrap",
+  verticalAlign: "middle",
 };
 
 const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, ref) => {
