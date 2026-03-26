@@ -123,13 +123,16 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
               {summaryItems.length > 0 && (
                 <div className="px-4 py-3 border-t" style={{ borderColor: "#eee" }}>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">{t.summary}</p>
-                  <ul className="list-disc pl-4 space-y-1 text-[11px] text-gray-700">
+                  <div className="space-y-1 text-[11px] text-gray-700">
                     {summaryItems.map((item, idx) => (
-                      <li key={`${prop.id}-summary-${idx}`} className={item.startsWith(t.savings) ? "font-bold text-gray-900" : ""}>
+                      <p
+                        key={`${prop.id}-summary-${idx}`}
+                        className={item.startsWith(t.savings) ? "font-bold text-gray-900 leading-5" : "leading-5"}
+                      >
                         {item}
-                      </li>
+                      </p>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
             </div>
