@@ -156,7 +156,7 @@ const AlchemAdmin = () => {
   // ── Login Screen ──
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="admin-selectable min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="w-full max-w-sm p-8 space-y-6">
           <h1 className="text-2xl font-bold text-center text-foreground">Admin</h1>
           <div className="space-y-4">
@@ -199,7 +199,7 @@ const AlchemAdmin = () => {
 
   // ── Admin Dashboard ──
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <div className="admin-selectable min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">

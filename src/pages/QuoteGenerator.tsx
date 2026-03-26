@@ -168,7 +168,7 @@ const QuoteGenerator = () => {
   }, [capture]);
 
   return (
-    <div className="h-screen flex bg-muted/30">
+    <div className="admin-selectable h-screen flex bg-muted/30">
       {/* Editor */}
       <div className="w-[420px] min-w-[360px] border-r border-border bg-background overflow-y-auto">
         <QuoteEditor

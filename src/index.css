@@ -100,8 +100,8 @@
   }
 }
 
-/* Prevent text selection and copying */
-body {
+/* Prevent text selection and copying (admin pages override via .admin-selectable) */
+body:not(:has(.admin-selectable)) {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
