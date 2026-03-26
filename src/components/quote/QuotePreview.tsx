@@ -25,8 +25,8 @@ const badgeBaseStyle: CSSProperties = {
 const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, ref) => {
   const { lang } = data;
   const t = lang === "es"
-    ? { title: "Cotización Farmacéutica", validUntil: "Válido hasta", priceTable: "Lista de Precios", size: "Tamaño", priceVial: "Precio / Vial", na: "N/A", analysis: "Análisis Comparativo", current: "Actual", proposed: "Propuesta", vials: "Viales", vialSize: "Tamaño vial", totalMg: "Total mg", totalCost: "Costo total", unitCost: "Costo/mg", savings: "Ahorro", sameMg: "Mismo contenido total", lowerUnit: "Menor costo unitario", moreMgLessCost: "Más producto, menor costo", conditions: "Condiciones", guarantee: "Garantía de Calidad", confidential: "CONFIDENCIAL — Este documento contiene información comercial privilegiada destinada exclusivamente al destinatario indicado.", noProduct: "Sin producto seleccionado" }
-    : { title: "Pharmaceutical Quote", validUntil: "Valid until", priceTable: "Price List", size: "Size", priceVial: "Price / Vial", na: "N/A", analysis: "Comparative Analysis", current: "Current", proposed: "Proposal", vials: "Vials", vialSize: "Vial size", totalMg: "Total mg", totalCost: "Total cost", unitCost: "Cost/mg", savings: "Savings", sameMg: "Same total content", lowerUnit: "Lower unit cost", moreMgLessCost: "More product, lower cost", conditions: "Conditions", guarantee: "Quality Guarantee", confidential: "CONFIDENTIAL — This document contains privileged commercial information intended exclusively for the indicated recipient.", noProduct: "No product selected" };
+    ? { title: "Cotización Farmacéutica", validUntil: "Válido hasta", priceTable: "Lista de Precios", size: "Tamaño", priceVial: "Precio / Vial", na: "N/A", analysis: "Análisis Comparativo", current: "Actual", proposed: "Propuesta", vials: "Viales", vialSize: "Tamaño vial", totalMg: "Total mg", totalCost: "Costo total", unitCost: "Costo/mg", savings: "Ahorro", sameMg: "Mismo contenido total", lowerUnit: "Menor costo unitario", moreMgLessCost: "Más producto, menor costo", summary: "Resumen de beneficios", conditions: "Condiciones", guarantee: "Garantía de Calidad", confidential: "CONFIDENCIAL — Este documento contiene información comercial privilegiada destinada exclusivamente al destinatario indicado.", noProduct: "Sin producto seleccionado" }
+    : { title: "Pharmaceutical Quote", validUntil: "Valid until", priceTable: "Price List", size: "Size", priceVial: "Price / Vial", na: "N/A", analysis: "Comparative Analysis", current: "Current", proposed: "Proposal", vials: "Vials", vialSize: "Vial size", totalMg: "Total mg", totalCost: "Total cost", unitCost: "Cost/mg", savings: "Savings", sameMg: "Same total content", lowerUnit: "Lower unit cost", moreMgLessCost: "More product, lower cost", summary: "Benefit summary", conditions: "Conditions", guarantee: "Quality Guarantee", confidential: "CONFIDENTIAL — This document contains privileged commercial information intended exclusively for the indicated recipient.", noProduct: "No product selected" };
 
   const selectedProduct = data.catalog.find((p) => p.id === data.currentOrder.productId);
   const currentVariant = selectedProduct?.variants.find((v) => v.id === data.currentOrder.variantId);
@@ -95,6 +95,12 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
           const sameMg = propTotalMg === currentTotalMg && currentTotalMg > 0;
           const lowerUnit = propUnitCost < currentUnitCost && currentUnitCost > 0 && propUnitCost > 0;
           const moreMgLessCost = propTotalMg > currentTotalMg && propTotalCost < currentTotalCost && currentTotalMg > 0;
+          const summaryItems = [
+            sameMg ? `✓ ${t.sameMg}` : null,
+            lowerUnit ? `✓ ${t.lowerUnit}` : null,
+            moreMgLessCost ? `✓ ${t.moreMgLessCost}` : null,
+            savingsAmount > 0 ? `${t.savings}: MX$ ${fmt(savingsAmount)}` : null,
+          ].filter((item): item is string => Boolean(item));
 
           return (
             <div key={prop.id} className="border rounded-lg" style={{ borderColor: "#d1e8e4" }}>
@@ -127,29 +133,18 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
                   </div>
                 </div>
               </div>
-              {/* Badges */}
-              <div className="px-4 pt-1 pb-4 flex flex-wrap gap-2 relative z-10">
-                {sameMg && (
-                  <span style={{ ...badgeBaseStyle, fontWeight: 600, backgroundColor: "#e0f5f0", color: "#1a7a6d" }}>
-                    ✓ {t.sameMg}
-                  </span>
-                )}
-                {lowerUnit && (
-                  <span style={{ ...badgeBaseStyle, fontWeight: 600, backgroundColor: "#e0f5f0", color: "#1a7a6d" }}>
-                    ✓ {t.lowerUnit}
-                  </span>
-                )}
-                {moreMgLessCost && (
-                  <span style={{ ...badgeBaseStyle, fontWeight: 700, backgroundColor: "#e76f51", color: "#ffffff" }}>
-                    🔥 {t.moreMgLessCost}
-                  </span>
-                )}
-                {savingsAmount > 0 && (
-                  <span style={{ ...badgeBaseStyle, fontWeight: 700, backgroundColor: "#2a9d8f", color: "#ffffff" }}>
-                    {t.savings}: MX$ {fmt(savingsAmount)}
-                  </span>
-                )}
-              </div>
+              {summaryItems.length > 0 && (
+                <div className="px-4 py-3 border-t" style={{ borderColor: "#eee" }}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-1">{t.summary}</p>
+                  <ul className="list-disc pl-4 space-y-1 text-[11px] text-gray-700">
+                    {summaryItems.map((item, idx) => (
+                      <li key={`${prop.id}-summary-${idx}`} className={item.startsWith(t.savings) ? "font-bold text-gray-900" : ""}>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           );
         })}
