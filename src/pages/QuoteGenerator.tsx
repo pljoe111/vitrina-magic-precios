@@ -85,7 +85,15 @@ const QuoteGenerator = () => {
 
   const capture = useCallback(async () => {
     if (!previewRef.current) return null;
-    return html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+    await document.fonts.ready;
+    const el = previewRef.current;
+    return html2canvas(el, {
+      scale: 3,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      width: el.scrollWidth,
+      height: el.scrollHeight,
+    });
   }, []);
 
   const handleExportPdf = useCallback(async () => {
