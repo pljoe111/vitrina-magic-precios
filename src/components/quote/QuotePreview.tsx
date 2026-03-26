@@ -95,7 +95,7 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
           const moreMgLessCost = propTotalMg > currentTotalMg && propTotalCost < currentTotalCost && currentTotalMg > 0;
 
           return (
-            <div key={prop.id} className="border rounded-lg overflow-hidden" style={{ borderColor: "#d1e8e4" }}>
+            <div key={prop.id} className="border rounded-lg" style={{ borderColor: "#d1e8e4" }}>
               <div className="py-2 px-4 font-bold text-white text-xs uppercase tracking-wider" style={{ backgroundColor: "#2a9d8f" }}>
                 {t.analysis}: {prop.name || t.proposed}
               </div>
