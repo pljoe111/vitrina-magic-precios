@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, type CSSProperties } from "react";
 import logo from "@/assets/logo.png";
 import { QuoteData } from "./types";
 import { format } from "date-fns";
@@ -8,6 +8,17 @@ interface QuotePreviewProps {
 }
 
 const fmt = (n: number) => n.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const badgeBaseStyle: CSSProperties = {
+  fontSize: "10px",
+  lineHeight: "1",
+  minHeight: "18px",
+  padding: "0 10px",
+  borderRadius: "4px",
+  display: "inline-flex",
+  alignItems: "center",
+  whiteSpace: "nowrap",
+};
 
 const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, ref) => {
   const { lang } = data;
@@ -117,22 +128,22 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
               {/* Badges */}
               <div className="px-4 pb-3 flex flex-wrap gap-2">
                 {sameMg && (
-                  <span style={{ fontSize: "9px", padding: "2px 8px", borderRadius: "3px", fontWeight: 500, backgroundColor: "#e0f5f0", color: "#1a7a6d", display: "inline-block" }}>
+                  <span style={{ ...badgeBaseStyle, fontWeight: 600, backgroundColor: "#e0f5f0", color: "#1a7a6d" }}>
                     ✓ {t.sameMg}
                   </span>
                 )}
                 {lowerUnit && (
-                  <span style={{ fontSize: "9px", padding: "2px 8px", borderRadius: "3px", fontWeight: 500, backgroundColor: "#e0f5f0", color: "#1a7a6d", display: "inline-block" }}>
+                  <span style={{ ...badgeBaseStyle, fontWeight: 600, backgroundColor: "#e0f5f0", color: "#1a7a6d" }}>
                     ✓ {t.lowerUnit}
                   </span>
                 )}
                 {moreMgLessCost && (
-                  <span style={{ fontSize: "9px", padding: "2px 8px", borderRadius: "3px", fontWeight: 700, backgroundColor: "#e76f51", color: "#ffffff", display: "inline-block" }}>
+                  <span style={{ ...badgeBaseStyle, fontWeight: 700, backgroundColor: "#e76f51", color: "#ffffff" }}>
                     🔥 {t.moreMgLessCost}
                   </span>
                 )}
                 {savingsAmount > 0 && (
-                  <span style={{ fontSize: "9px", padding: "2px 8px", borderRadius: "3px", fontWeight: 700, backgroundColor: "#2a9d8f", color: "#ffffff", display: "inline-block" }}>
+                  <span style={{ ...badgeBaseStyle, fontWeight: 700, backgroundColor: "#2a9d8f", color: "#ffffff" }}>
                     {t.savings}: MX$ {fmt(savingsAmount)}
                   </span>
                 )}
