@@ -86,13 +86,21 @@ const QuoteGenerator = () => {
   const capture = useCallback(async () => {
     if (!previewRef.current) return null;
     await document.fonts.ready;
+
     const el = previewRef.current;
+    const rect = el.getBoundingClientRect();
+    const width = Math.ceil(rect.width);
+    const height = Math.ceil(rect.height);
+
     return html2canvas(el, {
       scale: 3,
       useCORS: true,
       backgroundColor: "#ffffff",
-      width: el.scrollWidth,
-      height: el.scrollHeight,
+      width,
+      height,
+      windowWidth: width,
+      windowHeight: height,
+      foreignObjectRendering: true,
     });
   }, []);
 

@@ -11,13 +11,15 @@ const fmt = (n: number) => n.toLocaleString("es-MX", { minimumFractionDigits: 2,
 
 const badgeBaseStyle: CSSProperties = {
   fontSize: "11px",
-  lineHeight: "22px",
-  height: "22px",
-  padding: "0 10px",
+  lineHeight: "1.3",
+  minHeight: "24px",
+  padding: "3px 10px 4px",
   borderRadius: "4px",
   display: "inline-block",
   whiteSpace: "nowrap",
   verticalAlign: "middle",
+  boxSizing: "border-box",
+  overflow: "visible",
 };
 
 const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, ref) => {
