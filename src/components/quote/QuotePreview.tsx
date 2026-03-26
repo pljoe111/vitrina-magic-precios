@@ -128,7 +128,7 @@ const QuotePreview = forwardRef<HTMLDivElement, QuotePreviewProps>(({ data }, re
                 </div>
               </div>
               {/* Badges */}
-              <div className="px-4 pb-3 flex flex-wrap gap-2">
+              <div className="px-4 pt-1 pb-4 flex flex-wrap gap-2 relative z-10">
                 {sameMg && (
                   <span style={{ ...badgeBaseStyle, fontWeight: 600, backgroundColor: "#e0f5f0", color: "#1a7a6d" }}>
                     ✓ {t.sameMg}

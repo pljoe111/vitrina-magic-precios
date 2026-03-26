@@ -120,7 +120,7 @@ const QuoteGenerator = () => {
     if (!canvas) return;
     const link = document.createElement("a");
     link.download = `cotizacion-${data.clientName || "alchem"}.jpg`;
-    link.href = canvas.toDataURL("image/jpeg", 0.95);
+    link.href = canvas.toDataURL("image/jpeg", 1);
     link.click();
   }, [capture, data.clientName]);
 
