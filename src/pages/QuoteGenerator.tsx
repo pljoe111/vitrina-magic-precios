@@ -88,9 +88,8 @@ const QuoteGenerator = () => {
     await document.fonts.ready;
 
     const el = previewRef.current;
-    const rect = el.getBoundingClientRect();
-    const width = Math.ceil(rect.width);
-    const height = Math.ceil(rect.height);
+    const width = Math.ceil(el.scrollWidth);
+    const height = Math.ceil(el.scrollHeight);
 
     return html2canvas(el, {
       scale: 3,
@@ -98,9 +97,9 @@ const QuoteGenerator = () => {
       backgroundColor: "#ffffff",
       width,
       height,
-      windowWidth: width,
-      windowHeight: height,
-      foreignObjectRendering: true,
+      scrollX: 0,
+      scrollY: 0,
+      removeContainer: true,
     });
   }, []);
 
