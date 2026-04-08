@@ -33,7 +33,7 @@ const ManualConfirmacion = () => {
               </a>
             ) : (
               <a
-                href="https://wa.me/528131082689?text=Hola%2C%20acabo%20de%20registrarme%20para%20el%20manual%20profesional.%20%C2%BFPodr%C3%ADan%20enviarlo%3F"
+                href="https://wa.me/528117963113?text=Hola%2C%20acabo%20de%20registrarme%20para%20el%20manual%20profesional.%20%C2%BFPodr%C3%ADan%20enviarlo%3F"
                 target="_blank"
                 rel="noopener noreferrer"
               >
