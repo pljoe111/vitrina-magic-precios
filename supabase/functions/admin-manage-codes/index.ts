@@ -96,6 +96,16 @@ serve(async (req) => {
         break;
       }
 
+      case "list_leads": {
+        const { data, error } = await supabase
+          .from("leads")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        result = { leads: data };
+        break;
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,

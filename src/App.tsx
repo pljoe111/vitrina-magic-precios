@@ -9,6 +9,7 @@ import ManualConfirmacion from "./pages/ManualConfirmacion";
 import TestResults from "./pages/TestResults";
 import Calculadora from "./pages/Calculadora";
 import AlchemAdmin from "./pages/AlchemAdmin";
+import AdminLeads from "./pages/AdminLeads";
 import QuoteGenerator from "./pages/QuoteGenerator";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/calculadora" element={<Calculadora />} />
           <Route path="/manual-confirmacion" element={<ManualConfirmacion />} />
           <Route path="/alchem-admin" element={<AlchemAdmin />} />
+          <Route path="/alchem-admin/leads" element={<AdminLeads />} />
           <Route path="/alchem-admin/cotizador" element={<QuoteGenerator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
