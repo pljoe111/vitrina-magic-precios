@@ -95,7 +95,7 @@ const CatalogGate = ({ onAccessGranted }: CatalogGateProps) => {
       const { data, error } = await supabase
         .from("access_codes")
         .select("code, expires_at")
-        .eq("code", code.trim().toUpperCase())
+        .ilike("code", code.trim())
         .maybeSingle();
 
       if (error) throw error;
