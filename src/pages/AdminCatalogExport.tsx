@@ -23,6 +23,13 @@ const AdminCatalogExport = () => {
       scale: 2,
       useCORS: true,
       logging: false,
+      onclone: (doc) => {
+        // Neutralize fade-in animation so cards render at full opacity
+        doc.querySelectorAll<HTMLElement>(".opacity-0").forEach((el) => {
+          el.style.opacity = "1";
+          el.style.animation = "none";
+        });
+      },
     });
   };
 
