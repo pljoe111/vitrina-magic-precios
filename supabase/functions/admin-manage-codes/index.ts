@@ -106,6 +106,30 @@ serve(async (req) => {
         break;
       }
 
+      case "get_setting": {
+        const { key } = params;
+        const { data, error } = await supabase
+          .from("app_settings")
+          .select("value")
+          .eq("key", key)
+          .maybeSingle();
+        if (error) throw error;
+        result = { value: data?.value ?? null };
+        break;
+      }
+
+      case "set_setting": {
+        const { key, value } = params;
+        const { data, error } = await supabase
+          .from("app_settings")
+          .upsert({ key, value, updated_at: new Date().toISOString() })
+          .select()
+          .single();
+        if (error) throw error;
+        result = { setting: data };
+        break;
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,
