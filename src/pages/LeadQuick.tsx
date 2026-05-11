@@ -1,0 +1,420 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { Loader2, ArrowRight, ArrowLeft, MessageCircle, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { calculateLeadScore } from "@/lib/lead-scoring";
+import {
+  professionOptions,
+  practiceTypeOptions,
+  mainIntentOptions,
+} from "@/data/lead-form-options";
+
+const phoneRegex = /^[+\d\s()-]{7,20}$/;
+
+const schema = z.object({
+  full_name: z.string().trim().min(2, "Nombre requerido").max(100),
+  phone: z.string().trim().regex(phoneRegex, "Teléfono inválido"),
+  email: z.string().trim().email("Email inválido").max(255),
+  profession: z.string().min(1),
+  practice_type: z.string().min(1),
+  main_intent: z.string().min(1),
+});
+
+type FormData = z.infer<typeof schema>;
+
+const STEPS = ["Tu nombre", "WhatsApp", "Email", "Profesión", "Práctica", "Objetivo"] as const;
+
+const LeadQuick = () => {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(0);
+  const [data, setData] = useState<FormData>({
+    full_name: "",
+    phone: "",
+    email: "",
+    profession: "",
+    practice_type: "",
+    main_intent: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [waModalOpen, setWaModalOpen] = useState(false);
+
+  const update = (k: keyof FormData, v: string) => {
+    setData((d) => ({ ...d, [k]: v }));
+    setError(null);
+  };
+
+  const validateStep = (): boolean => {
+    const fields: (keyof FormData)[] = ["full_name", "phone", "email", "profession", "practice_type", "main_intent"];
+    const k = fields[step];
+    const partial = { ...data };
+    const result = schema.shape[k].safeParse(partial[k]);
+    if (!result.success) {
+      setError(result.error.errors[0]?.message || "Campo inválido");
+      return false;
+    }
+    return true;
+  };
+
+  const checkWhatsApp = async (): Promise<boolean> => {
+    setValidating(true);
+    try {
+      const { data: res, error: fnErr } = await supabase.functions.invoke("validate-whatsapp", {
+        body: { phone: data.phone },
+      });
+      if (fnErr) throw fnErr;
+      return !!res?.valid;
+    } catch (e) {
+      console.error("WA validation failed", e);
+      return true; // fail-open
+    } finally {
+      setValidating(false);
+    }
+  };
+
+  const handleNext = async () => {
+    if (!validateStep()) return;
+
+    // After WhatsApp step → check validity
+    if (step === 1) {
+      const valid = await checkWhatsApp();
+      if (!valid) {
+        setWaModalOpen(true);
+        return;
+      }
+    }
+
+    if (step < STEPS.length - 1) setStep(step + 1);
+    else submit();
+  };
+
+  const submit = async () => {
+    const parsed = schema.safeParse(data);
+    if (!parsed.success) {
+      setError(parsed.error.errors[0]?.message || "Revisa los datos");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { score, classification } = calculateLeadScore({
+        practice_type: data.practice_type,
+        role: "propietario",
+        patients_per_month: "0-50",
+        offers_peptides: false,
+        uses_glp1: false,
+        main_intent: data.main_intent,
+        interests: [],
+        email: data.email,
+      });
+
+      const { error: insErr } = await supabase.from("leads").insert({
+        full_name: data.full_name,
+        email: data.email,
+        phone: data.phone,
+        whatsapp: data.phone,
+        city: "no_especificado",
+        country: "México",
+        profession: data.profession,
+        practice_type: data.practice_type,
+        role: "no_especificado",
+        patients_per_month: "no_especificado",
+        offers_peptides: false,
+        uses_glp1: false,
+        interests: [],
+        main_intent: data.main_intent,
+        consent: true,
+        lead_score: score,
+        lead_classification: classification,
+      });
+      if (insErr) throw insErr;
+
+      // Fire-and-forget notification
+      supabase.functions
+        .invoke("send-lead-notification", {
+          body: {
+            full_name: data.full_name,
+            email: data.email,
+            phone: data.phone,
+            whatsapp: data.phone,
+            city: "—",
+            country: "México",
+            profession: data.profession,
+            lead_score: score,
+            lead_classification: classification,
+          },
+        })
+        .catch(() => {});
+
+      navigate("/manual-confirmacion");
+    } catch (e) {
+      console.error(e);
+      toast.error("Hubo un problema al enviar tus datos. Intenta de nuevo.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const confirmNonWhatsApp = () => {
+    setWaModalOpen(false);
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  };
+
+  const progress = ((step + 1) / STEPS.length) * 100;
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header */}
+      <header className="px-5 pt-6 pb-3 flex items-center justify-between">
+        <div className="font-display text-lg tracking-wide text-primary">ALCHEM</div>
+        <div className="text-xs text-muted-foreground font-body">
+          Paso {step + 1}/{STEPS.length}
+        </div>
+      </header>
+
+      {/* Progress */}
+      <div className="px-5">
+        <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+          <div
+            className="h-full bg-primary transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Content */}
+      <main className="flex-1 px-5 pt-8 pb-6 flex flex-col">
+        <div className="max-w-md mx-auto w-full flex-1 flex flex-col">
+          <h1 className="font-display text-2xl sm:text-3xl text-foreground leading-tight mb-1">
+            {step === 0 && "¿Cómo te llamas?"}
+            {step === 1 && "¿Tu WhatsApp?"}
+            {step === 2 && "¿Tu email?"}
+            {step === 3 && "¿Tu profesión?"}
+            {step === 4 && "¿Tipo de práctica?"}
+            {step === 5 && "¿Qué buscas lograr?"}
+          </h1>
+          <p className="text-sm text-muted-foreground font-body mb-8">
+            {step === 1
+              ? "Te contactamos por WhatsApp con tu manual y catálogo."
+              : "Solo tomará unos segundos."}
+          </p>
+
+          <div className="space-y-3">
+            {step === 0 && (
+              <>
+                <Label htmlFor="name" className="sr-only">Nombre</Label>
+                <Input
+                  id="name"
+                  autoFocus
+                  inputMode="text"
+                  autoComplete="name"
+                  placeholder="Dr. Juan Pérez"
+                  value={data.full_name}
+                  onChange={(e) => update("full_name", e.target.value)}
+                  className="h-14 text-base rounded-lg"
+                />
+              </>
+            )}
+
+            {step === 1 && (
+              <>
+                <Label htmlFor="phone" className="sr-only">WhatsApp</Label>
+                <div className="relative">
+                  <MessageCircle className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                  <Input
+                    id="phone"
+                    autoFocus
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="+52 81 1234 5678"
+                    value={data.phone}
+                    onChange={(e) => update("phone", e.target.value)}
+                    className="h-14 pl-12 text-base rounded-lg"
+                  />
+                </div>
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <Label htmlFor="email" className="sr-only">Email</Label>
+                <Input
+                  id="email"
+                  autoFocus
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="juan@clinica.com"
+                  value={data.email}
+                  onChange={(e) => update("email", e.target.value)}
+                  className="h-14 text-base rounded-lg"
+                />
+              </>
+            )}
+
+            {step === 3 && (
+              <Select value={data.profession} onValueChange={(v) => update("profession", v)}>
+                <SelectTrigger className="h-14 text-base rounded-lg">
+                  <SelectValue placeholder="Selecciona tu profesión" />
+                </SelectTrigger>
+                <SelectContent>
+                  {professionOptions.map((o) => (
+                    <SelectItem key={o.value} value={o.value} className="py-3 text-base">
+                      {o.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {step === 4 && (
+              <div className="grid gap-2">
+                {practiceTypeOptions.map((o) => (
+                  <button
+                    key={o.value}
+                    type="button"
+                    onClick={() => update("practice_type", o.value)}
+                    className={`w-full text-left px-4 py-4 rounded-lg border transition-all ${
+                      data.practice_type === o.value
+                        ? "border-primary bg-primary/5 text-foreground"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-body text-base">{o.label}</span>
+                      {data.practice_type === o.value && (
+                        <CheckCircle2 className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {step === 5 && (
+              <div className="grid gap-2">
+                {mainIntentOptions.map((o) => (
+                  <button
+                    key={o.value}
+                    type="button"
+                    onClick={() => update("main_intent", o.value)}
+                    className={`w-full text-left px-4 py-4 rounded-lg border transition-all ${
+                      data.main_intent === o.value
+                        ? "border-primary bg-primary/5 text-foreground"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-body text-base">{o.label}</span>
+                      {data.main_intent === o.value && (
+                        <CheckCircle2 className="h-5 w-5 text-primary" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {error && (
+              <p className="text-sm text-destructive flex items-center gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                {error}
+              </p>
+            )}
+          </div>
+        </div>
+      </main>
+
+      {/* Sticky footer CTA */}
+      <footer className="sticky bottom-0 px-5 pb-6 pt-3 bg-background border-t border-border/50">
+        <div className="max-w-md mx-auto flex items-center gap-2">
+          {step > 0 && (
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep(step - 1)}
+              className="h-14 rounded-full px-5"
+              disabled={submitting || validating}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          )}
+          <Button
+            size="lg"
+            onClick={handleNext}
+            disabled={submitting || validating}
+            className="h-14 rounded-full flex-1 text-base font-semibold"
+          >
+            {validating ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Verificando…
+              </>
+            ) : submitting ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Enviando…
+              </>
+            ) : step === STEPS.length - 1 ? (
+              <>Enviar</>
+            ) : (
+              <>
+                Continuar
+                <ArrowRight className="h-5 w-5" />
+              </>
+            )}
+          </Button>
+        </div>
+      </footer>
+
+      {/* Non-WhatsApp confirmation modal */}
+      <Dialog open={waModalOpen} onOpenChange={setWaModalOpen}>
+        <DialogContent className="max-w-sm rounded-lg">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-gold" />
+              Número sin WhatsApp
+            </DialogTitle>
+            <DialogDescription className="font-body text-sm pt-2">
+              No detectamos WhatsApp activo en{" "}
+              <span className="font-semibold text-foreground">{data.phone}</span>. Te contactamos
+              principalmente por ese medio.
+              <br />
+              <br />
+              ¿Quieres continuar con este número de todos modos?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setWaModalOpen(false)}
+              className="rounded-full"
+            >
+              Corregir número
+            </Button>
+            <Button onClick={confirmNonWhatsApp} className="rounded-full">
+              Continuar igual
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default LeadQuick;

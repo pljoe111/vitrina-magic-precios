@@ -12,6 +12,7 @@ import AlchemAdmin from "./pages/AlchemAdmin";
 import AdminLeads from "./pages/AdminLeads";
 import QuoteGenerator from "./pages/QuoteGenerator";
 import AdminCatalogExport from "./pages/AdminCatalogExport";
+import LeadQuick from "./pages/LeadQuick";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/alchem-admin/leads" element={<AdminLeads />} />
           <Route path="/alchem-admin/cotizador" element={<QuoteGenerator />} />
           <Route path="/alchem-admin/catalogo" element={<AdminCatalogExport />} />
+          <Route path="/lead" element={<LeadQuick />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
