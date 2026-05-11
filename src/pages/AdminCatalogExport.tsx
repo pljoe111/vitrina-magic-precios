@@ -31,15 +31,59 @@ const AdminCatalogExport = () => {
     setBusy("pdf");
     try {
       const canvas = await renderNode(gridRef.current);
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: canvas.width > canvas.height ? "landscape" : "portrait",
-        unit: "px",
-        format: [canvas.width, canvas.height],
-      });
-      pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-      pdf.save("catalogo-alchem.pdf");
-      toast({ title: "PDF descargado" });
+
+      // A4 dimensions in mm
+      const pdfW = 210;
+      const pdfH = 297;
+      const marginMm = 8;
+      const contentW = pdfW - marginMm * 2;
+      const contentH = pdfH - marginMm * 2;
+
+      // Convert content area to source pixels (proportional to canvas width)
+      const pxPerMm = canvas.width / contentW;
+      const pageHeightPx = contentH * pxPerMm;
+
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      let renderedPx = 0;
+      let pageIdx = 0;
+      while (renderedPx < canvas.height) {
+        const sliceHeightPx = Math.min(pageHeightPx, canvas.height - renderedPx);
+
+        // Create a canvas for this page slice
+        const pageCanvas = document.createElement("canvas");
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = sliceHeightPx;
+        const ctx = pageCanvas.getContext("2d")!;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        ctx.drawImage(
+          canvas,
+          0, renderedPx, canvas.width, sliceHeightPx,
+          0, 0, canvas.width, sliceHeightPx
+        );
+
+        const imgData = pageCanvas.toDataURL("image/jpeg", 0.92);
+        const sliceHmm = sliceHeightPx / pxPerMm;
+
+        if (pageIdx > 0) pdf.addPage();
+        pdf.addImage(imgData, "JPEG", marginMm, marginMm, contentW, sliceHmm, undefined, "FAST");
+
+        renderedPx += sliceHeightPx;
+        pageIdx++;
+      }
+
+      // Open print preview in a new tab instead of forcing download
+      const blobUrl = pdf.output("bloburl");
+      const win = window.open(blobUrl, "_blank");
+      if (win) {
+        win.addEventListener("load", () => {
+          try { win.focus(); win.print(); } catch {}
+        });
+      } else {
+        pdf.save("catalogo-alchem.pdf");
+      }
+      toast({ title: "PDF listo", description: "Abriendo vista previa de impresión" });
     } catch (e: any) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     } finally {
