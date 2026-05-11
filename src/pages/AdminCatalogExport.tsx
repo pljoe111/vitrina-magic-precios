@@ -198,10 +198,12 @@ const AdminCatalogExport = () => {
           copiarla o descargarla individualmente.
         </p>
 
-        <Card className="p-6 bg-background">
+        <Card className="p-6 bg-background overflow-auto">
+          {/* Fixed A4-portrait content width for predictable print layout */}
           <div
             ref={gridRef}
-            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 bg-background"
+            className="grid grid-cols-2 gap-4 bg-white mx-auto p-2"
+            style={{ width: "733px" }}
           >
             {products.map((product, i) => (
               <div
