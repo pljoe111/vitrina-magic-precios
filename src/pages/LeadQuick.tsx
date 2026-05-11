@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import manualCover from "@/assets/manual-cover.png";
@@ -56,6 +56,39 @@ const LeadQuick = () => {
   const [submitting, setSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
   const [waModalOpen, setWaModalOpen] = useState(false);
+  const [freeUntil, setFreeUntil] = useState<Date | null>(null);
+  const [now, setNow] = useState<Date>(new Date());
+
+  useEffect(() => {
+    let mounted = true;
+    supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "free_manual_until")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!mounted) return;
+        const v = (data as any)?.value;
+        if (v && typeof v === "string") {
+          const d = new Date(v);
+          if (!isNaN(d.getTime())) setFreeUntil(d);
+        }
+      });
+    return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!freeUntil) return;
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, [freeUntil]);
+
+  const isFree = !!freeUntil && freeUntil.getTime() > now.getTime();
+  const remainingMs = freeUntil ? Math.max(0, freeUntil.getTime() - now.getTime()) : 0;
+  const days = Math.floor(remainingMs / 86400000);
+  const hours = Math.floor((remainingMs % 86400000) / 3600000);
+  const minutes = Math.floor((remainingMs % 3600000) / 60000);
+  const seconds = Math.floor((remainingMs % 60000) / 1000);
 
   const update = <K extends keyof FormData>(k: K, v: FormData[K]) => {
     setData((d) => ({ ...d, [k]: v }));
@@ -203,14 +236,54 @@ const LeadQuick = () => {
         <main className="flex-1 px-5 pb-6 pt-2 flex flex-col">
           <div className="max-w-md mx-auto w-full flex-1 flex flex-col items-center text-center">
             <div className="text-[11px] uppercase tracking-widest text-primary font-body font-semibold mb-3">
-              Manual Clínico · PDF gratuito
+              Manual Clínico · PDF
             </div>
             <h1 className="font-display text-3xl sm:text-4xl text-foreground leading-[1.1] mb-3">
               Protocolos de Péptidos para tu Práctica
             </h1>
-            <p className="text-sm text-muted-foreground font-body mb-6 max-w-sm">
+
+            {/* Price */}
+            <div className="flex items-end justify-center gap-3 mb-2">
+              {isFree && (
+                <span className="font-body text-base text-muted-foreground line-through decoration-2">
+                  MX$500
+                </span>
+              )}
+              <span className="font-display text-3xl text-primary leading-none">
+                {isFree ? "GRATIS" : "MX$500"}
+              </span>
+            </div>
+
+            <p className="text-sm text-muted-foreground font-body mb-5 max-w-sm">
               21 páginas con dosificación, reconstitución y protocolos clínicos basados en evidencia.
             </p>
+
+            {/* Countdown */}
+            {isFree && (
+              <div className="mb-5 w-full max-w-xs mx-auto">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-body mb-1.5">
+                  Promoción gratis termina en
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[
+                    { v: days, l: "días" },
+                    { v: hours, l: "hrs" },
+                    { v: minutes, l: "min" },
+                    { v: seconds, l: "seg" },
+                  ].map((c, i) => (
+                    <div key={i} className="rounded-lg border border-primary/30 bg-primary/5 py-2">
+                      <div className="font-display text-xl text-primary leading-none">
+                        {String(c.v).padStart(2, "0")}
+                      </div>
+                      <div className="text-[9px] uppercase tracking-wider text-muted-foreground mt-1">
+                        {c.l}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
 
             <div className="relative w-full max-w-[280px] mx-auto mb-6">
               <div className="absolute -inset-4 bg-primary/10 blur-2xl rounded-full" aria-hidden />

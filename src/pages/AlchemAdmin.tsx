@@ -47,6 +47,11 @@ const AlchemAdmin = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editExpiry, setEditExpiry] = useState<Date | undefined>();
 
+  // Free manual promo settings
+  const [freeUntil, setFreeUntil] = useState<Date | undefined>();
+  const [freeUntilTime, setFreeUntilTime] = useState<string>("23:59");
+  const [savingFree, setSavingFree] = useState(false);
+
   const apiCall = useCallback(
     async (action: string, params: Record<string, unknown> = {}) => {
       const { data, error } = await supabase.functions.invoke("admin-manage-codes", {
@@ -77,13 +82,40 @@ const AlchemAdmin = () => {
       await apiCall("login");
       setIsAuthenticated(true);
       toast({ title: "Bienvenido" });
-      // fetch codes right after login
       const data = await apiCall("list");
       setCodes(data.codes || []);
+      try {
+        const s = await apiCall("get_setting", { key: "free_manual_until" });
+        if (s?.value) {
+          const d = new Date(s.value);
+          setFreeUntil(d);
+          setFreeUntilTime(`${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`);
+        }
+      } catch { /* ignore */ }
     } catch {
       toast({ title: "Credenciales incorrectas", variant: "destructive" });
     } finally {
       setLoginLoading(false);
+    }
+  };
+
+  const handleSaveFree = async (clear = false) => {
+    setSavingFree(true);
+    try {
+      let value: string | null = null;
+      if (!clear && freeUntil) {
+        const [hh, mm] = freeUntilTime.split(":").map(Number);
+        const d = new Date(freeUntil);
+        d.setHours(hh || 0, mm || 0, 0, 0);
+        value = d.toISOString();
+      }
+      await apiCall("set_setting", { key: "free_manual_until", value });
+      toast({ title: clear ? "Promoción desactivada" : "Promoción guardada" });
+      if (clear) setFreeUntil(undefined);
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setSavingFree(false);
     }
   };
 
@@ -266,6 +298,55 @@ const AlchemAdmin = () => {
             </div>
             <Button onClick={handleCreate} disabled={creating}>
               {creating ? "Creando..." : "Crear"}
+            </Button>
+          </div>
+        </Card>
+
+        {/* Free Manual Promo */}
+        <Card className="p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Clock className="h-5 w-5" /> Promoción Manual Gratis
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Mientras esta fecha no haya pasado, el manual aparece como GRATIS (precio MX$500 tachado) con cuenta regresiva en <code>/protocol-manual</code>.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="space-y-2">
+              <Label>Gratis hasta (fecha)</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn("w-full justify-start text-left font-normal", !freeUntil && "text-muted-foreground")}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {freeUntil ? format(freeUntil, "dd/MM/yyyy") : "Seleccionar fecha"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={freeUntil}
+                    onSelect={setFreeUntil}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="space-y-2">
+              <Label>Hora (24h, local)</Label>
+              <Input
+                type="time"
+                value={freeUntilTime}
+                onChange={(e) => setFreeUntilTime(e.target.value)}
+              />
+            </div>
+            <Button onClick={() => handleSaveFree(false)} disabled={savingFree || !freeUntil}>
+              {savingFree ? "Guardando..." : "Guardar promoción"}
+            </Button>
+            <Button variant="outline" onClick={() => handleSaveFree(true)} disabled={savingFree}>
+              Desactivar
             </Button>
           </div>
         </Card>
