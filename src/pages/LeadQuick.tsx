@@ -54,8 +54,19 @@ const LeadQuick = () => {
   const [validating, setValidating] = useState(false);
   const [waModalOpen, setWaModalOpen] = useState(false);
 
-  const update = (k: keyof FormData, v: string) => {
+  const update = <K extends keyof FormData>(k: K, v: FormData[K]) => {
     setData((d) => ({ ...d, [k]: v }));
+    setError(null);
+  };
+
+  const toggleIntent = (value: string) => {
+    setData((d) => {
+      const exists = d.main_intent.includes(value);
+      return {
+        ...d,
+        main_intent: exists ? d.main_intent.filter((x) => x !== value) : [...d.main_intent, value],
+      };
+    });
     setError(null);
   };
 
