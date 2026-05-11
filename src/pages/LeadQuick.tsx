@@ -31,7 +31,7 @@ const schema = z.object({
   email: z.string().trim().email("Email inválido").max(255),
   profession: z.string().min(1),
   practice_type: z.string().min(1),
-  main_intent: z.string().min(1),
+  main_intent: z.array(z.string()).min(1, "Selecciona al menos una opción"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -47,15 +47,26 @@ const LeadQuick = () => {
     email: "",
     profession: "",
     practice_type: "",
-    main_intent: "",
+    main_intent: [] as string[],
   });
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
   const [waModalOpen, setWaModalOpen] = useState(false);
 
-  const update = (k: keyof FormData, v: string) => {
+  const update = <K extends keyof FormData>(k: K, v: FormData[K]) => {
     setData((d) => ({ ...d, [k]: v }));
+    setError(null);
+  };
+
+  const toggleIntent = (value: string) => {
+    setData((d) => {
+      const exists = d.main_intent.includes(value);
+      return {
+        ...d,
+        main_intent: exists ? d.main_intent.filter((x) => x !== value) : [...d.main_intent, value],
+      };
+    });
     setError(null);
   };
 
@@ -117,7 +128,7 @@ const LeadQuick = () => {
         patients_per_month: "0-50",
         offers_peptides: false,
         uses_glp1: false,
-        main_intent: data.main_intent,
+        main_intent: data.main_intent[0] ?? "",
         interests: [],
         email: data.email,
       });
@@ -136,7 +147,7 @@ const LeadQuick = () => {
         offers_peptides: false,
         uses_glp1: false,
         interests: [],
-        main_intent: data.main_intent,
+        main_intent: data.main_intent.join(","),
         consent: true,
         lead_score: score,
         lead_classification: classification,
@@ -341,25 +352,29 @@ const LeadQuick = () => {
 
             {step === 5 && (
               <div className="grid gap-2">
-                {mainIntentOptions.map((o) => (
-                  <button
-                    key={o.value}
-                    type="button"
-                    onClick={() => update("main_intent", o.value)}
-                    className={`w-full text-left px-4 py-4 rounded-lg border transition-all ${
-                      data.main_intent === o.value
-                        ? "border-primary bg-primary/5 text-foreground"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-body text-base">{o.label}</span>
-                      {data.main_intent === o.value && (
-                        <CheckCircle2 className="h-5 w-5 text-primary" />
-                      )}
-                    </div>
-                  </button>
-                ))}
+                <p className="text-xs text-muted-foreground font-body -mt-4 mb-1">
+                  Selecciona todas las que apliquen.
+                </p>
+                {mainIntentOptions.map((o) => {
+                  const selected = data.main_intent.includes(o.value);
+                  return (
+                    <button
+                      key={o.value}
+                      type="button"
+                      onClick={() => toggleIntent(o.value)}
+                      className={`w-full text-left px-4 py-4 rounded-lg border transition-all ${
+                        selected
+                          ? "border-primary bg-primary/5 text-foreground"
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-body text-base">{o.label}</span>
+                        {selected && <CheckCircle2 className="h-5 w-5 text-primary" />}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             )}
 
