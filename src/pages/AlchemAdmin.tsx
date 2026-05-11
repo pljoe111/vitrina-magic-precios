@@ -302,6 +302,55 @@ const AlchemAdmin = () => {
           </div>
         </Card>
 
+        {/* Free Manual Promo */}
+        <Card className="p-6 space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Clock className="h-5 w-5" /> Promoción Manual Gratis
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Mientras esta fecha no haya pasado, el manual aparece como GRATIS (precio MX$500 tachado) con cuenta regresiva en <code>/protocol-manual</code>.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div className="space-y-2">
+              <Label>Gratis hasta (fecha)</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn("w-full justify-start text-left font-normal", !freeUntil && "text-muted-foreground")}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {freeUntil ? format(freeUntil, "dd/MM/yyyy") : "Seleccionar fecha"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={freeUntil}
+                    onSelect={setFreeUntil}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="space-y-2">
+              <Label>Hora (24h, local)</Label>
+              <Input
+                type="time"
+                value={freeUntilTime}
+                onChange={(e) => setFreeUntilTime(e.target.value)}
+              />
+            </div>
+            <Button onClick={() => handleSaveFree(false)} disabled={savingFree || !freeUntil}>
+              {savingFree ? "Guardando..." : "Guardar promoción"}
+            </Button>
+            <Button variant="outline" onClick={() => handleSaveFree(true)} disabled={savingFree}>
+              Desactivar
+            </Button>
+          </div>
+        </Card>
+
         {/* Filters */}
         <div className="flex gap-2">
           {(["all", "active", "inactive"] as FilterMode[]).map((f) => (
