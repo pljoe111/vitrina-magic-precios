@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from "@/assets/logo.png";
 import { z } from "zod";
 import { Loader2, ArrowRight, ArrowLeft, MessageCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -191,7 +192,7 @@ const LeadQuick = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="px-5 pt-6 pb-3 flex items-center justify-between">
-        <div className="font-display text-lg tracking-wide text-primary">ALCHEM</div>
+        <img src={logo} alt="ALCHEM" className="h-8 w-auto" />
         <div className="text-xs text-muted-foreground font-body">
           Paso {step + 1}/{STEPS.length}
         </div>
