@@ -160,7 +160,7 @@ const LeadQuick = () => {
         })
         .catch(() => {});
 
-      navigate("/manual-confirmacion");
+      navigate(`/manual-confirmacion?url=${encodeURIComponent("/PROTOCOLOS_ALCHEM_2026.pdf")}`);
     } catch (e) {
       console.error(e);
       toast.error("Hubo un problema al enviar tus datos. Intenta de nuevo.");
@@ -196,8 +196,41 @@ const LeadQuick = () => {
         </div>
       </div>
 
+      {/* PDF Carrot — persistent preview of the reward */}
+      <div className="px-5 pt-5">
+        <div className="max-w-md mx-auto flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
+          <div className="relative shrink-0">
+            <div className="h-16 w-12 rounded-sm bg-white border border-border shadow-sm flex flex-col items-center justify-center overflow-hidden">
+              <div className="font-display text-[8px] text-primary leading-tight text-center px-1">
+                ALCHEM
+              </div>
+              <div className="mt-1 space-y-[2px] w-full px-1">
+                <div className="h-[2px] bg-muted-foreground/30 rounded-full" />
+                <div className="h-[2px] bg-muted-foreground/30 rounded-full w-3/4" />
+                <div className="h-[2px] bg-muted-foreground/30 rounded-full" />
+                <div className="h-[2px] bg-muted-foreground/30 rounded-full w-2/3" />
+              </div>
+            </div>
+            <div className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+              PDF
+            </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[11px] uppercase tracking-wider text-primary font-body font-semibold">
+              Tu descarga al finalizar
+            </div>
+            <div className="font-display text-sm text-foreground leading-tight truncate">
+              Manual Clínico de Protocolos
+            </div>
+            <div className="text-[11px] text-muted-foreground font-body">
+              21 páginas · PDF gratuito
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Content */}
-      <main className="flex-1 px-5 pt-8 pb-6 flex flex-col">
+      <main className="flex-1 px-5 pt-6 pb-6 flex flex-col">
         <div className="max-w-md mx-auto w-full flex-1 flex flex-col">
           <h1 className="font-display text-2xl sm:text-3xl text-foreground leading-tight mb-1">
             {step === 0 && "¿Cómo te llamas?"}
