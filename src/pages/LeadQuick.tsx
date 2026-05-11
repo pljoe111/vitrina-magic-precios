@@ -56,6 +56,39 @@ const LeadQuick = () => {
   const [submitting, setSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
   const [waModalOpen, setWaModalOpen] = useState(false);
+  const [freeUntil, setFreeUntil] = useState<Date | null>(null);
+  const [now, setNow] = useState<Date>(new Date());
+
+  useEffect(() => {
+    let mounted = true;
+    supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "free_manual_until")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!mounted) return;
+        const v = (data as any)?.value;
+        if (v && typeof v === "string") {
+          const d = new Date(v);
+          if (!isNaN(d.getTime())) setFreeUntil(d);
+        }
+      });
+    return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!freeUntil) return;
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, [freeUntil]);
+
+  const isFree = !!freeUntil && freeUntil.getTime() > now.getTime();
+  const remainingMs = freeUntil ? Math.max(0, freeUntil.getTime() - now.getTime()) : 0;
+  const days = Math.floor(remainingMs / 86400000);
+  const hours = Math.floor((remainingMs % 86400000) / 3600000);
+  const minutes = Math.floor((remainingMs % 3600000) / 60000);
+  const seconds = Math.floor((remainingMs % 60000) / 1000);
 
   const update = <K extends keyof FormData>(k: K, v: FormData[K]) => {
     setData((d) => ({ ...d, [k]: v }));
