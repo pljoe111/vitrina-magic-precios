@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import ManualProfesional from "./pages/ManualProfesional";
 import ManualConfirmacion from "./pages/ManualConfirmacion";
@@ -33,7 +33,8 @@ const App = () => (
           <Route path="/alchem-admin/leads" element={<AdminLeads />} />
           <Route path="/alchem-admin/cotizador" element={<QuoteGenerator />} />
           <Route path="/alchem-admin/catalogo" element={<AdminCatalogExport />} />
-          <Route path="/lead" element={<LeadQuick />} />
+          <Route path="/protocol-manual" element={<LeadQuick />} />
+          <Route path="/lead" element={<Navigate to="/protocol-manual" replace />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
