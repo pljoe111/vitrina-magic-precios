@@ -352,25 +352,29 @@ const LeadQuick = () => {
 
             {step === 5 && (
               <div className="grid gap-2">
-                {mainIntentOptions.map((o) => (
-                  <button
-                    key={o.value}
-                    type="button"
-                    onClick={() => update("main_intent", o.value)}
-                    className={`w-full text-left px-4 py-4 rounded-lg border transition-all ${
-                      data.main_intent === o.value
-                        ? "border-primary bg-primary/5 text-foreground"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-body text-base">{o.label}</span>
-                      {data.main_intent === o.value && (
-                        <CheckCircle2 className="h-5 w-5 text-primary" />
-                      )}
-                    </div>
-                  </button>
-                ))}
+                <p className="text-xs text-muted-foreground font-body -mt-4 mb-1">
+                  Selecciona todas las que apliquen.
+                </p>
+                {mainIntentOptions.map((o) => {
+                  const selected = data.main_intent.includes(o.value);
+                  return (
+                    <button
+                      key={o.value}
+                      type="button"
+                      onClick={() => toggleIntent(o.value)}
+                      className={`w-full text-left px-4 py-4 rounded-lg border transition-all ${
+                        selected
+                          ? "border-primary bg-primary/5 text-foreground"
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-body text-base">{o.label}</span>
+                        {selected && <CheckCircle2 className="h-5 w-5 text-primary" />}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             )}
 
