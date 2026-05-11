@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logo from "@/assets/logo.png";
 import { z } from "zod";
 import { Loader2, ArrowRight, ArrowLeft, MessageCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
