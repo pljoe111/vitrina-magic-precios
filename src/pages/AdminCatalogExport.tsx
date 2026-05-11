@@ -23,57 +23,65 @@ const AdminCatalogExport = () => {
       scale: 2,
       useCORS: true,
       logging: false,
+      onclone: (doc) => {
+        // Neutralize fade-in animation so cards render at full opacity
+        doc.querySelectorAll<HTMLElement>(".opacity-0").forEach((el) => {
+          el.style.opacity = "1";
+          el.style.animation = "none";
+        });
+      },
     });
   };
 
   const exportPDF = async () => {
-    if (!gridRef.current) return;
     setBusy("pdf");
     try {
-      const canvas = await renderNode(gridRef.current);
-
-      // A4 dimensions in mm
+      // A4 portrait, mm
       const pdfW = 210;
       const pdfH = 297;
-      const marginMm = 8;
-      const contentW = pdfW - marginMm * 2;
-      const contentH = pdfH - marginMm * 2;
-
-      // Convert content area to source pixels (proportional to canvas width)
-      const pxPerMm = canvas.width / contentW;
-      const pageHeightPx = contentH * pxPerMm;
+      const margin = 12;
+      const gutter = 6;
+      const cols = 2;
+      const contentW = pdfW - margin * 2;
+      const cardWmm = (contentW - gutter * (cols - 1)) / cols;
 
       const pdf = new jsPDF("p", "mm", "a4");
 
-      let renderedPx = 0;
-      let pageIdx = 0;
-      while (renderedPx < canvas.height) {
-        const sliceHeightPx = Math.min(pageHeightPx, canvas.height - renderedPx);
-
-        // Create a canvas for this page slice
-        const pageCanvas = document.createElement("canvas");
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = sliceHeightPx;
-        const ctx = pageCanvas.getContext("2d")!;
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-        ctx.drawImage(
-          canvas,
-          0, renderedPx, canvas.width, sliceHeightPx,
-          0, 0, canvas.width, sliceHeightPx
-        );
-
-        const imgData = pageCanvas.toDataURL("image/jpeg", 0.92);
-        const sliceHmm = sliceHeightPx / pxPerMm;
-
-        if (pageIdx > 0) pdf.addPage();
-        pdf.addImage(imgData, "JPEG", marginMm, marginMm, contentW, sliceHmm, undefined, "FAST");
-
-        renderedPx += sliceHeightPx;
-        pageIdx++;
+      // Render each card individually so we never split a card across pages
+      const ids = products.map((p) => p.id);
+      const rendered: { canvas: HTMLCanvasElement; hmm: number }[] = [];
+      for (const id of ids) {
+        const node = cardRefs.current[id];
+        if (!node) continue;
+        const c = await renderNode(node);
+        const hmm = (c.height / c.width) * cardWmm;
+        rendered.push({ canvas: c, hmm });
       }
 
-      // Open print preview in a new tab instead of forcing download
+      // Lay out into rows of `cols`. Row height = max card height in that row.
+      let y = margin;
+      const pageBottom = pdfH - margin;
+
+      for (let i = 0; i < rendered.length; i += cols) {
+        const row = rendered.slice(i, i + cols);
+        const rowH = Math.max(...row.map((r) => r.hmm));
+
+        // New page if this row doesn't fit
+        if (i > 0 && y + rowH > pageBottom) {
+          pdf.addPage();
+          y = margin;
+        }
+
+        row.forEach((r, j) => {
+          const x = margin + j * (cardWmm + gutter);
+          const imgData = r.canvas.toDataURL("image/jpeg", 0.92);
+          pdf.addImage(imgData, "JPEG", x, y, cardWmm, r.hmm, undefined, "FAST");
+        });
+
+        y += rowH + gutter;
+      }
+
+      // Open in a new tab and trigger print preview
       const blobUrl = pdf.output("bloburl");
       const win = window.open(blobUrl, "_blank");
       if (win) {
