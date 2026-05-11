@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { CalendarIcon, Plus, Power, Trash2, Clock, LogOut, Eye, EyeOff, Users } from "lucide-react";
+import { CalendarIcon, Plus, Power, Trash2, Clock, LogOut, Eye, EyeOff, Users, Package } from "lucide-react";
 import { FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -208,6 +208,11 @@ const AlchemAdmin = () => {
             <Button variant="outline" size="sm" asChild>
               <Link to={`/alchem-admin/leads?u=${encodeURIComponent(username)}&p=${encodeURIComponent(password)}`}>
                 <Users className="h-4 w-4 mr-2" /> Leads
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/alchem-admin/catalogo">
+                <Package className="h-4 w-4 mr-2" /> Catálogo
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
