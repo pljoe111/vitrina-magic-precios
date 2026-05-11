@@ -42,6 +42,7 @@ const STEPS = ["Tu nombre", "WhatsApp", "Email", "Profesión", "Práctica", "Obj
 
 const LeadQuick = () => {
   const navigate = useNavigate();
+  const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
   const [data, setData] = useState<FormData>({
     full_name: "",
