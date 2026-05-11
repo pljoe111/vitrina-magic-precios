@@ -55,18 +55,10 @@ serve(async (req) => {
       });
     }
 
-    // Accept various shapes
+    // wapp-api shape: { registered: boolean, results: [{ registered, whatsappId }] }
     const valid =
-      data.valid === true ||
-      data.exists === true ||
-      data.is_whatsapp === true ||
-      data.isWhatsapp === true ||
-      data.onWhatsapp === true ||
-      data.on_whatsapp === true ||
-      data.status === "valid" ||
-      data.status === "in" ||
-      data.result === true ||
-      (data.data && (data.data.valid === true || data.data.exists === true || data.data.is_whatsapp === true));
+      data.registered === true ||
+      (Array.isArray(data.results) && data.results.some((r: any) => r?.registered === true));
 
     return new Response(JSON.stringify({ valid, raw: data }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
