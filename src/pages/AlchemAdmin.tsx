@@ -47,6 +47,11 @@ const AlchemAdmin = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editExpiry, setEditExpiry] = useState<Date | undefined>();
 
+  // Free manual promo settings
+  const [freeUntil, setFreeUntil] = useState<Date | undefined>();
+  const [freeUntilTime, setFreeUntilTime] = useState<string>("23:59");
+  const [savingFree, setSavingFree] = useState(false);
+
   const apiCall = useCallback(
     async (action: string, params: Record<string, unknown> = {}) => {
       const { data, error } = await supabase.functions.invoke("admin-manage-codes", {
