@@ -82,13 +82,40 @@ const AlchemAdmin = () => {
       await apiCall("login");
       setIsAuthenticated(true);
       toast({ title: "Bienvenido" });
-      // fetch codes right after login
       const data = await apiCall("list");
       setCodes(data.codes || []);
+      try {
+        const s = await apiCall("get_setting", { key: "free_manual_until" });
+        if (s?.value) {
+          const d = new Date(s.value);
+          setFreeUntil(d);
+          setFreeUntilTime(`${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`);
+        }
+      } catch { /* ignore */ }
     } catch {
       toast({ title: "Credenciales incorrectas", variant: "destructive" });
     } finally {
       setLoginLoading(false);
+    }
+  };
+
+  const handleSaveFree = async (clear = false) => {
+    setSavingFree(true);
+    try {
+      let value: string | null = null;
+      if (!clear && freeUntil) {
+        const [hh, mm] = freeUntilTime.split(":").map(Number);
+        const d = new Date(freeUntil);
+        d.setHours(hh || 0, mm || 0, 0, 0);
+        value = d.toISOString();
+      }
+      await apiCall("set_setting", { key: "free_manual_until", value });
+      toast({ title: clear ? "Promoción desactivada" : "Promoción guardada" });
+      if (clear) setFreeUntil(undefined);
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setSavingFree(false);
     }
   };
 
