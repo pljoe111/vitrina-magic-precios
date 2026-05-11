@@ -160,7 +160,7 @@ const LeadQuick = () => {
         })
         .catch(() => {});
 
-      navigate(`/manual-confirmacion?url=${encodeURIComponent("/PROTOCOLOS_ALCHEM_2026.pdf")}`);
+      navigate(`/manual-confirmacion?url=${encodeURIComponent("/Manual-Clinico-Protocolos-ALCHEM-2026.pdf")}`);
     } catch (e) {
       console.error(e);
       toast.error("Hubo un problema al enviar tus datos. Intenta de nuevo.");
