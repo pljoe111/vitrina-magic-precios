@@ -40,8 +40,8 @@ const AdminCatalogExport = () => {
       const pdfW = 210;
       const pdfH = 297;
       const margin = 12;
-      const gutter = 6;
-      const cols = 2;
+      const gutter = 5;
+      const cols = 3;
       const contentW = pdfW - margin * 2;
       const cardWmm = (contentW - gutter * (cols - 1)) / cols;
 
