@@ -128,7 +128,7 @@ const LeadQuick = () => {
         patients_per_month: "0-50",
         offers_peptides: false,
         uses_glp1: false,
-        main_intent: data.main_intent,
+        main_intent: data.main_intent[0] ?? "",
         interests: [],
         email: data.email,
       });
@@ -147,7 +147,7 @@ const LeadQuick = () => {
         offers_peptides: false,
         uses_glp1: false,
         interests: [],
-        main_intent: data.main_intent,
+        main_intent: data.main_intent.join(","),
         consent: true,
         lead_score: score,
         lead_classification: classification,
