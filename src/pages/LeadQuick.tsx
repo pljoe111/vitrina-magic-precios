@@ -31,7 +31,7 @@ const schema = z.object({
   email: z.string().trim().email("Email inválido").max(255),
   profession: z.string().min(1),
   practice_type: z.string().min(1),
-  main_intent: z.string().min(1),
+  main_intent: z.array(z.string()).min(1, "Selecciona al menos una opción"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -47,7 +47,7 @@ const LeadQuick = () => {
     email: "",
     profession: "",
     practice_type: "",
-    main_intent: "",
+    main_intent: [] as string[],
   });
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
