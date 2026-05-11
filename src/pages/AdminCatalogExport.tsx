@@ -75,7 +75,8 @@ const AdminCatalogExport = () => {
         row.forEach((r, j) => {
           const x = margin + j * (cardWmm + gutter);
           const imgData = r.canvas.toDataURL("image/jpeg", 0.92);
-          pdf.addImage(imgData, "JPEG", x, y, cardWmm, r.hmm, undefined, "FAST");
+          // Stretch every card in the row to the same height (rowH) for visual consistency
+          pdf.addImage(imgData, "JPEG", x, y, cardWmm, rowH, undefined, "FAST");
         });
 
         y += rowH + gutter;
