@@ -192,7 +192,7 @@ const LeadQuick = () => {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="px-5 pt-6 pb-3 flex items-center justify-between">
-        <div className="font-display text-lg tracking-wide text-primary">ALCHEM</div>
+        <img src={logo} alt="ALCHEM" className="h-8 w-auto" />
         <div className="text-xs text-muted-foreground font-body">
           Paso {step + 1}/{STEPS.length}
         </div>
