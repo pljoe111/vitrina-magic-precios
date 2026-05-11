@@ -190,6 +190,67 @@ const LeadQuick = () => {
 
   const progress = ((step + 1) / STEPS.length) * 100;
 
+  if (!started) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="px-5 pt-6 pb-3 flex items-center justify-between">
+          <img src={logo} alt="ALCHEM" className="h-8 w-auto" />
+          <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-body">
+            Edición 2026
+          </span>
+        </header>
+
+        <main className="flex-1 px-5 pb-6 pt-2 flex flex-col">
+          <div className="max-w-md mx-auto w-full flex-1 flex flex-col items-center text-center">
+            <div className="text-[11px] uppercase tracking-widest text-primary font-body font-semibold mb-3">
+              Manual Clínico · PDF gratuito
+            </div>
+            <h1 className="font-display text-3xl sm:text-4xl text-foreground leading-[1.1] mb-3">
+              Protocolos de Péptidos para tu Práctica
+            </h1>
+            <p className="text-sm text-muted-foreground font-body mb-6 max-w-sm">
+              21 páginas con dosificación, reconstitución y protocolos clínicos basados en evidencia.
+            </p>
+
+            <div className="relative w-full max-w-[280px] mx-auto mb-6">
+              <div className="absolute -inset-4 bg-primary/10 blur-2xl rounded-full" aria-hidden />
+              <img
+                src={manualCover}
+                alt="Portada del Manual Clínico de Protocolos ALCHEM 2026"
+                className="relative w-full h-auto rounded-lg shadow-2xl border border-border"
+              />
+              <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">
+                PDF
+              </div>
+            </div>
+
+            <ul className="text-left text-sm font-body text-foreground/80 space-y-1.5 mb-2">
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />Dosificación clínica detallada</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />Protocolos para GLP-1, BPC-157, NAD+ y más</li>
+              <li className="flex gap-2"><CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />Solo para profesionales de la salud</li>
+            </ul>
+          </div>
+        </main>
+
+        <footer className="sticky bottom-0 px-5 pb-6 pt-3 bg-background border-t border-border/50">
+          <div className="max-w-md mx-auto">
+            <Button
+              size="lg"
+              onClick={() => setStarted(true)}
+              className="h-14 rounded-full w-full text-base font-semibold"
+            >
+              Descargar manual gratis
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+            <p className="text-[11px] text-muted-foreground font-body text-center mt-2">
+              Toma 30 segundos · 6 preguntas rápidas
+            </p>
+          </div>
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
