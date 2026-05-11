@@ -40,8 +40,8 @@ const AdminCatalogExport = () => {
       const pdfW = 210;
       const pdfH = 297;
       const margin = 12;
-      const gutter = 6;
-      const cols = 2;
+      const gutter = 5;
+      const cols = 3;
       const contentW = pdfW - margin * 2;
       const cardWmm = (contentW - gutter * (cols - 1)) / cols;
 
@@ -74,7 +74,11 @@ const AdminCatalogExport = () => {
 
         row.forEach((r, j) => {
           const x = margin + j * (cardWmm + gutter);
+          // Paint white background to fill the uniform row height
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(x, y, cardWmm, rowH, "F");
           const imgData = r.canvas.toDataURL("image/jpeg", 0.92);
+          // Place card at native aspect ratio, top-aligned within the row box
           pdf.addImage(imgData, "JPEG", x, y, cardWmm, r.hmm, undefined, "FAST");
         });
 
