@@ -74,9 +74,12 @@ const AdminCatalogExport = () => {
 
         row.forEach((r, j) => {
           const x = margin + j * (cardWmm + gutter);
+          // Paint white background to fill the uniform row height
+          pdf.setFillColor(255, 255, 255);
+          pdf.rect(x, y, cardWmm, rowH, "F");
           const imgData = r.canvas.toDataURL("image/jpeg", 0.92);
-          // Stretch every card in the row to the same height (rowH) for visual consistency
-          pdf.addImage(imgData, "JPEG", x, y, cardWmm, rowH, undefined, "FAST");
+          // Place card at native aspect ratio, top-aligned within the row box
+          pdf.addImage(imgData, "JPEG", x, y, cardWmm, r.hmm, undefined, "FAST");
         });
 
         y += rowH + gutter;
