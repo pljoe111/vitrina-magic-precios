@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { CalendarIcon, Plus, Power, Trash2, Clock, LogOut, Eye, EyeOff, Users, Package } from "lucide-react";
-import { FileText } from "lucide-react";
+import { FileText, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AccessCode = {
