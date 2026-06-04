@@ -130,6 +130,69 @@ serve(async (req) => {
         break;
       }
 
+      case "list_batches": {
+        const { data, error } = await supabase
+          .from("test_batches")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        result = { batches: data };
+        break;
+      }
+
+      case "create_batch": {
+        const { batch } = params;
+        const status = batch.coa_url ? "published" : "pending";
+        const { data, error } = await supabase
+          .from("test_batches")
+          .insert({ ...batch, status })
+          .select()
+          .single();
+        if (error) throw error;
+        result = { batch: data };
+        break;
+      }
+
+      case "update_batch": {
+        const { id, patch } = params;
+        const next = { ...patch };
+        if (Object.prototype.hasOwnProperty.call(patch, "coa_url") && !patch.status) {
+          next.status = patch.coa_url ? "published" : "pending";
+        }
+        const { data, error } = await supabase
+          .from("test_batches")
+          .update(next)
+          .eq("id", id)
+          .select()
+          .single();
+        if (error) throw error;
+        result = { batch: data };
+        break;
+      }
+
+      case "set_batch_status": {
+        const { id, status } = params;
+        const { data, error } = await supabase
+          .from("test_batches")
+          .update({ status })
+          .eq("id", id)
+          .select()
+          .single();
+        if (error) throw error;
+        result = { batch: data };
+        break;
+      }
+
+      case "delete_batch": {
+        const { id } = params;
+        const { error } = await supabase.from("test_batches").delete().eq("id", id);
+        if (error) throw error;
+        result = { success: true };
+        break;
+      }
+
+
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,

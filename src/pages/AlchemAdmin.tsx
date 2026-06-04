@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { CalendarIcon, Plus, Power, Trash2, Clock, LogOut, Eye, EyeOff, Users, Package } from "lucide-react";
-import { FileText } from "lucide-react";
+import { FileText, FlaskConical } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type AccessCode = {
@@ -245,6 +245,11 @@ const AlchemAdmin = () => {
             <Button variant="outline" size="sm" asChild>
               <Link to="/alchem-admin/catalogo">
                 <Package className="h-4 w-4 mr-2" /> Catálogo
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link to={`/alchem-admin/batches?u=${encodeURIComponent(username)}&p=${encodeURIComponent(password)}`}>
+                <FlaskConical className="h-4 w-4 mr-2" /> Análisis
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>

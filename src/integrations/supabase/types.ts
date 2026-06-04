@@ -158,6 +158,69 @@ export type Database = {
         }
         Relationships: []
       }
+      test_batches: {
+        Row: {
+          batch_number: string
+          coa_label: string | null
+          coa_url: string | null
+          contaminants: string | null
+          created_at: string
+          endotoxins: string | null
+          exp_date: string | null
+          id: string
+          lab_partner_url: string | null
+          lot_number: string
+          potency: string | null
+          product_id: string
+          product_name: string
+          purity: number | null
+          status: string
+          sterility: string | null
+          test_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          batch_number: string
+          coa_label?: string | null
+          coa_url?: string | null
+          contaminants?: string | null
+          created_at?: string
+          endotoxins?: string | null
+          exp_date?: string | null
+          id?: string
+          lab_partner_url?: string | null
+          lot_number: string
+          potency?: string | null
+          product_id: string
+          product_name: string
+          purity?: number | null
+          status?: string
+          sterility?: string | null
+          test_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          batch_number?: string
+          coa_label?: string | null
+          coa_url?: string | null
+          contaminants?: string | null
+          created_at?: string
+          endotoxins?: string | null
+          exp_date?: string | null
+          id?: string
+          lab_partner_url?: string | null
+          lot_number?: string
+          potency?: string | null
+          product_id?: string
+          product_name?: string
+          purity?: number | null
+          status?: string
+          sterility?: string | null
+          test_date?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
