@@ -248,6 +248,11 @@ const AlchemAdmin = () => {
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
+              <Link to={`/alchem-admin/batches?u=${encodeURIComponent(username)}&p=${encodeURIComponent(password)}`}>
+                <FlaskConical className="h-4 w-4 mr-2" /> Análisis
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
               <Link to="/alchem-admin/cotizador">
                 <FileText className="h-4 w-4 mr-2" /> Cotizador
               </Link>
