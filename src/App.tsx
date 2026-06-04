@@ -12,6 +12,7 @@ import AlchemAdmin from "./pages/AlchemAdmin";
 import AdminLeads from "./pages/AdminLeads";
 import QuoteGenerator from "./pages/QuoteGenerator";
 import AdminCatalogExport from "./pages/AdminCatalogExport";
+import AdminBatches from "./pages/AdminBatches";
 import LeadQuick from "./pages/LeadQuick";
 import NotFound from "./pages/NotFound";
 
