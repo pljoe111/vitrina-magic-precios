@@ -59,6 +59,7 @@ const TestResults = () => {
   const [selected, setSelected] = useState<Batch | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showPending, setShowPending] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -80,18 +81,27 @@ const TestResults = () => {
     })();
   }, []);
 
+  const pendingCount = useMemo(
+    () => batches.filter((r) => r.status === "pending" || !r.coa_url).length,
+    [batches]
+  );
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
+    const base = showPending
+      ? batches
+      : batches.filter((r) => !(r.status === "pending" || !r.coa_url));
     const list = q
-      ? batches.filter(
+      ? base.filter(
           (r) =>
             r.lot_number.toLowerCase().includes(q) ||
             r.batch_number.toLowerCase().includes(q) ||
             r.product_name.toLowerCase().includes(q)
         )
-      : batches;
+      : base;
     return list.slice(0, MAX_VISIBLE);
-  }, [search, batches]);
+  }, [search, batches, showPending]);
+
 
   if (selected) {
     const isPending = selected.status === "pending" || !selected.coa_url;
