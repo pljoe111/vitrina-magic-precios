@@ -136,8 +136,8 @@ const TestResults = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                     <MetricCard label="Pureza" value={`${selected.purity}%`} />
                     <MetricCard label="Potencia" value={selected.potency || "—"} />
-                    <MetricCard label="Esterilidad" value={selected.sterility || "—"} />
-                    <MetricCard label="Endotoxinas" value={selected.endotoxins || "—"} />
+                    <MetricCard label="Esterilidad" value={translate(selected.sterility)} />
+                    <MetricCard label="Endotoxinas" value={translate(selected.endotoxins)} />
                   </div>
                 )}
 
