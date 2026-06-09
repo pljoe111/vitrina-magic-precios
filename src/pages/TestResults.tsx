@@ -168,7 +168,7 @@ const TestResults = () => {
                     {!isPending && (
                       <TableRow>
                         <TableCell className="font-body font-medium">Contaminantes</TableCell>
-                        <TableCell className="font-body">{selected.contaminants}</TableCell>
+                        <TableCell className="font-body">{translate(selected.contaminants)}</TableCell>
                       </TableRow>
                     )}
                   </TableBody>
