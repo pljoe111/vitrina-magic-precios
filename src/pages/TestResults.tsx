@@ -35,6 +35,25 @@ interface Batch {
 
 const MAX_VISIBLE = 50;
 
+const translate = (value: string | null | undefined): string => {
+  if (!value) return "—";
+  const map: Record<string, string> = {
+    "None detected": "No detectado",
+    "Not detected": "No detectado",
+    "None Detected": "No detectado",
+    "Pass": "Aprobado",
+    "PASS": "Aprobado",
+    "Fail": "No aprobado",
+    "FAIL": "No aprobado",
+    "Pending": "Pendiente",
+    "pending": "Pendiente",
+    "N/A": "N/D",
+  };
+  return map[value.trim()] ?? value;
+};
+const isPass = (v: string | null | undefined) =>
+  !!v && ["pass", "aprobado"].includes(v.trim().toLowerCase());
+
 const TestResults = () => {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Batch | null>(null);
@@ -117,8 +136,8 @@ const TestResults = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                     <MetricCard label="Pureza" value={`${selected.purity}%`} />
                     <MetricCard label="Potencia" value={selected.potency || "—"} />
-                    <MetricCard label="Esterilidad" value={selected.sterility || "—"} />
-                    <MetricCard label="Endotoxinas" value={selected.endotoxins || "—"} />
+                    <MetricCard label="Esterilidad" value={translate(selected.sterility)} />
+                    <MetricCard label="Endotoxinas" value={translate(selected.endotoxins)} />
                   </div>
                 )}
 
@@ -149,7 +168,7 @@ const TestResults = () => {
                     {!isPending && (
                       <TableRow>
                         <TableCell className="font-body font-medium">Contaminantes</TableCell>
-                        <TableCell className="font-body">{selected.contaminants}</TableCell>
+                        <TableCell className="font-body">{translate(selected.contaminants)}</TableCell>
                       </TableRow>
                     )}
                   </TableBody>
@@ -277,7 +296,7 @@ const TestResults = () => {
                           {pending ? (
                             <span className="text-muted-foreground text-xs font-body">—</span>
                           ) : (
-                            <Badge variant={r.sterility === "Pass" ? "default" : "destructive"} className="font-body">{r.sterility}</Badge>
+                            <Badge variant={isPass(r.sterility) ? "default" : "destructive"} className="font-body">{translate(r.sterility)}</Badge>
                           )}
                         </TableCell>
                         <TableCell><ChevronRight className="h-4 w-4 text-muted-foreground" /></TableCell>
