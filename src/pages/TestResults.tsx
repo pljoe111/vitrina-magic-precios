@@ -8,6 +8,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from "@/components/ui/dialog";
+import {
   ExternalLink, FileText, ShieldCheck, FlaskConical, Search, ArrowLeft, ChevronRight, Clock,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
