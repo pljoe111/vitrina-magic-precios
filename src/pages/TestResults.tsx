@@ -59,6 +59,7 @@ const TestResults = () => {
   const [selected, setSelected] = useState<Batch | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showPending, setShowPending] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -80,18 +81,27 @@ const TestResults = () => {
     })();
   }, []);
 
+  const pendingCount = useMemo(
+    () => batches.filter((r) => r.status === "pending" || !r.coa_url).length,
+    [batches]
+  );
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
+    const base = showPending
+      ? batches
+      : batches.filter((r) => !(r.status === "pending" || !r.coa_url));
     const list = q
-      ? batches.filter(
+      ? base.filter(
           (r) =>
             r.lot_number.toLowerCase().includes(q) ||
             r.batch_number.toLowerCase().includes(q) ||
             r.product_name.toLowerCase().includes(q)
         )
-      : batches;
+      : base;
     return list.slice(0, MAX_VISIBLE);
-  }, [search, batches]);
+  }, [search, batches, showPending]);
+
 
   if (selected) {
     const isPending = selected.status === "pending" || !selected.coa_url;
@@ -250,9 +260,24 @@ const TestResults = () => {
 
       <section className="py-12">
         <div className="container mx-auto px-6 max-w-5xl">
-          <div className="relative mb-8 max-w-md mx-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Buscar por lote, batch o producto…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 font-body" />
+          <div className="mb-8 max-w-md mx-auto flex flex-col gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Buscar por lote, batch o producto…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 font-body" />
+            </div>
+            {pendingCount > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-body gap-2 self-center rounded-full"
+                onClick={() => setShowPending((v) => !v)}
+              >
+                <Clock className="h-3.5 w-3.5" />
+                {showPending
+                  ? `Ocultar pendientes (${pendingCount})`
+                  : `Mostrar pendientes (${pendingCount})`}
+              </Button>
+            )}
           </div>
 
           {loading ? (
