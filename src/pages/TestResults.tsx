@@ -63,6 +63,46 @@ const TestResults = () => {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPending, setShowPending] = useState(false);
+  const [pendingModal, setPendingModal] = useState(false);
+
+  const PENDING_ACK_KEY = "alchem.pendingAckAt";
+  const shouldShowModal = () => {
+    try {
+      const v = localStorage.getItem(PENDING_ACK_KEY);
+      if (v === "never") return false;
+      if (!v) return true;
+      const ts = Number(v);
+      if (!Number.isFinite(ts)) return true;
+      return Date.now() - ts > 24 * 60 * 60 * 1000;
+    } catch {
+      return true;
+    }
+  };
+
+  const handleTogglePending = () => {
+    if (showPending) {
+      setShowPending(false);
+      return;
+    }
+    if (shouldShowModal()) {
+      setPendingModal(true);
+    } else {
+      setShowPending(true);
+    }
+  };
+
+  const ackContinue = () => {
+    try { localStorage.setItem(PENDING_ACK_KEY, String(Date.now())); } catch {}
+    setPendingModal(false);
+    setShowPending(true);
+  };
+
+  const ackNever = () => {
+    try { localStorage.setItem(PENDING_ACK_KEY, "never"); } catch {}
+    setPendingModal(false);
+    setShowPending(true);
+  };
+
 
   useEffect(() => {
     (async () => {
