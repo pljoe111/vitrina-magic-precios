@@ -408,6 +408,30 @@ const TestResults = () => {
       </section>
 
       <Footer />
+
+      <Dialog open={pendingModal} onOpenChange={setPendingModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="rounded-full bg-primary/10 p-2.5 w-fit mb-2">
+              <Clock className="h-5 w-5 text-primary" />
+            </div>
+            <DialogTitle className="font-display text-xl">¿Qué significa "Reporte Pendiente"?</DialogTitle>
+            <DialogDescription className="font-body text-sm leading-relaxed pt-2">
+              Estos lotes <strong>ya pasaron nuestras pruebas internas</strong> de pureza, potencia, esterilidad y endotoxinas. Estamos esperando el certificado del laboratorio independiente externo, que se publicará aquí en cuanto esté disponible.
+              <br /><br />
+              No afecta la calidad del producto — algunos laboratorios simplemente tardan más en emitir el reporte final.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-col gap-2 sm:gap-2">
+            <Button onClick={ackContinue} className="rounded-full w-full font-body">
+              Continuar
+            </Button>
+            <Button onClick={ackNever} variant="ghost" size="sm" className="w-full font-body text-muted-foreground">
+              No volver a mostrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
