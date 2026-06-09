@@ -30,6 +30,7 @@ interface Batch {
   coa_label: string | null;
   lab_partner_url: string | null;
   status: string;
+  created_at?: string;
 }
 
 const MAX_VISIBLE = 50;
