@@ -30,9 +30,10 @@ interface Batch {
   coa_label: string | null;
   lab_partner_url: string | null;
   status: string;
+  created_at?: string;
 }
 
-const MAX_VISIBLE = 20;
+const MAX_VISIBLE = 50;
 
 const TestResults = () => {
   const [search, setSearch] = useState("");
@@ -46,9 +47,16 @@ const TestResults = () => {
         .from("test_batches")
         .select("*")
         .neq("status", "disabled")
-        .order("test_date", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false });
-      setBatches((data as Batch[]) || []);
+      // Pending batches first (newest analysis cycle), then published by test_date
+      const sorted = ((data as Batch[]) || []).slice().sort((a, b) => {
+        const aPending = a.status === "pending" || !a.coa_url;
+        const bPending = b.status === "pending" || !b.coa_url;
+        if (aPending !== bPending) return aPending ? -1 : 1;
+        if (aPending) return (b.created_at ?? "").localeCompare(a.created_at ?? "");
+        return (b.test_date ?? "").localeCompare(a.test_date ?? "");
+      });
+      setBatches(sorted);
       setLoading(false);
     })();
   }, []);
