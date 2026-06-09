@@ -296,7 +296,7 @@ const TestResults = () => {
                           {pending ? (
                             <span className="text-muted-foreground text-xs font-body">—</span>
                           ) : (
-                            <Badge variant={r.sterility === "Pass" ? "default" : "destructive"} className="font-body">{r.sterility}</Badge>
+                            <Badge variant={isPass(r.sterility) ? "default" : "destructive"} className="font-body">{translate(r.sterility)}</Badge>
                           )}
                         </TableCell>
                         <TableCell><ChevronRight className="h-4 w-4 text-muted-foreground" /></TableCell>
