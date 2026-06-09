@@ -313,7 +313,7 @@ const TestResults = () => {
                 variant="outline"
                 size="sm"
                 className="font-body gap-2 self-center rounded-full"
-                onClick={() => setShowPending((v) => !v)}
+                onClick={handleTogglePending}
               >
                 <Clock className="h-3.5 w-3.5" />
                 {showPending
