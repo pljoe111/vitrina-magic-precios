@@ -8,6 +8,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
+} from "@/components/ui/dialog";
+import {
   ExternalLink, FileText, ShieldCheck, FlaskConical, Search, ArrowLeft, ChevronRight, Clock,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -60,6 +63,46 @@ const TestResults = () => {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPending, setShowPending] = useState(false);
+  const [pendingModal, setPendingModal] = useState(false);
+
+  const PENDING_ACK_KEY = "alchem.pendingAckAt";
+  const shouldShowModal = () => {
+    try {
+      const v = localStorage.getItem(PENDING_ACK_KEY);
+      if (v === "never") return false;
+      if (!v) return true;
+      const ts = Number(v);
+      if (!Number.isFinite(ts)) return true;
+      return Date.now() - ts > 24 * 60 * 60 * 1000;
+    } catch {
+      return true;
+    }
+  };
+
+  const handleTogglePending = () => {
+    if (showPending) {
+      setShowPending(false);
+      return;
+    }
+    if (shouldShowModal()) {
+      setPendingModal(true);
+    } else {
+      setShowPending(true);
+    }
+  };
+
+  const ackContinue = () => {
+    try { localStorage.setItem(PENDING_ACK_KEY, String(Date.now())); } catch {}
+    setPendingModal(false);
+    setShowPending(true);
+  };
+
+  const ackNever = () => {
+    try { localStorage.setItem(PENDING_ACK_KEY, "never"); } catch {}
+    setPendingModal(false);
+    setShowPending(true);
+  };
+
 
   useEffect(() => {
     (async () => {
@@ -270,7 +313,7 @@ const TestResults = () => {
                 variant="outline"
                 size="sm"
                 className="font-body gap-2 self-center rounded-full"
-                onClick={() => setShowPending((v) => !v)}
+                onClick={handleTogglePending}
               >
                 <Clock className="h-3.5 w-3.5" />
                 {showPending
@@ -365,6 +408,30 @@ const TestResults = () => {
       </section>
 
       <Footer />
+
+      <Dialog open={pendingModal} onOpenChange={setPendingModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="rounded-full bg-primary/10 p-2.5 w-fit mb-2">
+              <Clock className="h-5 w-5 text-primary" />
+            </div>
+            <DialogTitle className="font-display text-xl">¿Qué significa "Reporte Pendiente"?</DialogTitle>
+            <DialogDescription className="font-body text-sm leading-relaxed pt-2">
+              Estos lotes <strong>ya pasaron nuestras pruebas internas</strong> de pureza, potencia, esterilidad y endotoxinas. Estamos esperando el certificado del laboratorio independiente externo, que se publicará aquí en cuanto esté disponible.
+              <br /><br />
+              No afecta la calidad del producto — algunos laboratorios simplemente tardan más en emitir el reporte final.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-col gap-2 sm:gap-2">
+            <Button onClick={ackContinue} className="rounded-full w-full font-body">
+              Continuar
+            </Button>
+            <Button onClick={ackNever} variant="ghost" size="sm" className="w-full font-body text-muted-foreground">
+              No volver a mostrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
