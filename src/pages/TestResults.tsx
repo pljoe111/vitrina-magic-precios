@@ -260,9 +260,24 @@ const TestResults = () => {
 
       <section className="py-12">
         <div className="container mx-auto px-6 max-w-5xl">
-          <div className="relative mb-8 max-w-md mx-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Buscar por lote, batch o producto…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 font-body" />
+          <div className="mb-8 max-w-md mx-auto flex flex-col gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Buscar por lote, batch o producto…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 font-body" />
+            </div>
+            {pendingCount > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="font-body gap-2 self-center rounded-full"
+                onClick={() => setShowPending((v) => !v)}
+              >
+                <Clock className="h-3.5 w-3.5" />
+                {showPending
+                  ? `Ocultar pendientes (${pendingCount})`
+                  : `Mostrar pendientes (${pendingCount})`}
+              </Button>
+            )}
           </div>
 
           {loading ? (
