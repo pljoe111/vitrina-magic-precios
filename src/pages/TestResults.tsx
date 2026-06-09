@@ -35,6 +35,25 @@ interface Batch {
 
 const MAX_VISIBLE = 50;
 
+const translate = (value: string | null | undefined): string => {
+  if (!value) return "—";
+  const map: Record<string, string> = {
+    "None detected": "No detectado",
+    "Not detected": "No detectado",
+    "None Detected": "No detectado",
+    "Pass": "Aprobado",
+    "PASS": "Aprobado",
+    "Fail": "No aprobado",
+    "FAIL": "No aprobado",
+    "Pending": "Pendiente",
+    "pending": "Pendiente",
+    "N/A": "N/D",
+  };
+  return map[value.trim()] ?? value;
+};
+const isPass = (v: string | null | undefined) =>
+  !!v && ["pass", "aprobado"].includes(v.trim().toLowerCase());
+
 const TestResults = () => {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Batch | null>(null);
