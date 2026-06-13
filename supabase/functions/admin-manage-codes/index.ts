@@ -14,21 +14,25 @@ serve(async (req) => {
   try {
     const { action, username, password, ...params } = await req.json();
 
-    // Validate credentials
     const ADMIN_USER = "alchem";
     const ADMIN_PASS = Deno.env.get("ADMIN_PASSWORD");
-
-    if (username !== ADMIN_USER || password !== ADMIN_PASS) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Public (no-auth) actions
+    const PUBLIC_ACTIONS = new Set(["validate_code"]);
+
+    if (!PUBLIC_ACTIONS.has(action)) {
+      if (username !== ADMIN_USER || password !== ADMIN_PASS) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     let result;
 
