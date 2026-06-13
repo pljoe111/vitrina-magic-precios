@@ -64,6 +64,25 @@ const TestResults = () => {
   const [loading, setLoading] = useState(true);
   const [showPending, setShowPending] = useState(false);
   const [pendingModal, setPendingModal] = useState(false);
+  const [signedCoaUrl, setSignedCoaUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSignedCoaUrl(null);
+    if (!selected?.coa_url) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("admin-manage-codes", {
+          body: { action: "sign_coa", path: selected.coa_url },
+        });
+        if (error) throw error;
+        if (!cancelled && data?.signedUrl) setSignedCoaUrl(data.signedUrl);
+      } catch (e) {
+        console.error("sign_coa failed", e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selected?.id, selected?.coa_url]);
 
   const PENDING_ACK_KEY = "alchem.pendingAckAt";
   const shouldShowModal = () => {
