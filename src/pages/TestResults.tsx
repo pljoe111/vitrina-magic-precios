@@ -62,6 +62,7 @@ const TestResults = () => {
   const [selected, setSelected] = useState<Batch | null>(null);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [showPending, setShowPending] = useState(false);
   const [pendingModal, setPendingModal] = useState(false);
   const [signedCoaUrl, setSignedCoaUrl] = useState<string | null>(null);
@@ -130,23 +131,41 @@ const TestResults = () => {
 
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+
     (async () => {
-      const { data } = await supabase
-        .from("test_batches")
-        .select("*")
-        .neq("status", "disabled")
-        .order("created_at", { ascending: false });
-      // Pending batches first (newest analysis cycle), then published by test_date
-      const sorted = ((data as Batch[]) || []).slice().sort((a, b) => {
-        const aPending = a.status === "pending" || !a.coa_url;
-        const bPending = b.status === "pending" || !b.coa_url;
-        if (aPending !== bPending) return aPending ? -1 : 1;
-        if (aPending) return (b.created_at ?? "").localeCompare(a.created_at ?? "");
-        return (b.test_date ?? "").localeCompare(a.test_date ?? "");
-      });
-      setBatches(sorted);
-      setLoading(false);
+      try {
+        setLoadError(null);
+        const { data, error } = await supabase
+          .from("test_batches")
+          .select("*")
+          .neq("status", "disabled")
+          .order("created_at", { ascending: false })
+          .abortSignal(controller.signal);
+        if (error) throw error;
+        // Pending batches first (newest analysis cycle), then published by test_date
+        const sorted = ((data as Batch[]) || []).slice().sort((a, b) => {
+          const aPending = a.status === "pending" || !a.coa_url;
+          const bPending = b.status === "pending" || !b.coa_url;
+          if (aPending !== bPending) return aPending ? -1 : 1;
+          if (aPending) return (b.created_at ?? "").localeCompare(a.created_at ?? "");
+          return (b.test_date ?? "").localeCompare(a.test_date ?? "");
+        });
+        setBatches(sorted);
+      } catch (error) {
+        if (!controller.signal.aborted) console.error("test_batches load failed", error);
+        setLoadError("No se pudieron cargar los resultados. Intenta recargar la página.");
+      } finally {
+        window.clearTimeout(timeout);
+        setLoading(false);
+      }
     })();
+
+    return () => {
+      window.clearTimeout(timeout);
+      controller.abort();
+    };
   }, []);
 
   const pendingCount = useMemo(
@@ -356,6 +375,14 @@ const TestResults = () => {
 
           {loading ? (
             <div className="text-center py-16 text-muted-foreground font-body">Cargando…</div>
+          ) : loadError ? (
+            <div className="text-center py-16">
+              <FlaskConical className="h-10 w-10 text-muted-foreground/40 mx-auto mb-4" />
+              <p className="text-muted-foreground font-body">{loadError}</p>
+              <Button variant="outline" size="sm" className="mt-4 rounded-full font-body" onClick={() => window.location.reload()}>
+                Recargar
+              </Button>
+            </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-16">
               <FlaskConical className="h-10 w-10 text-muted-foreground/40 mx-auto mb-4" />
