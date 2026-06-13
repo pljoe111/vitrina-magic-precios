@@ -23,7 +23,7 @@ serve(async (req) => {
     );
 
     // Public (no-auth) actions
-    const PUBLIC_ACTIONS = new Set(["validate_code"]);
+    const PUBLIC_ACTIONS = new Set(["validate_code", "sign_coa"]);
 
     if (!PUBLIC_ACTIONS.has(action)) {
       if (username !== ADMIN_USER || password !== ADMIN_PASS) {
@@ -266,6 +266,39 @@ serve(async (req) => {
         result = { success: true };
         break;
       }
+
+      case "upload_coa": {
+        // admin-only (passed auth check above). params: { filename, content_base64 }
+        const { filename, content_base64 } = params;
+        if (!filename || !content_base64) throw new Error("filename and content_base64 are required");
+        const safeName = String(filename).replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `${Date.now()}-${safeName}`;
+        const binary = Uint8Array.from(atob(content_base64), (c) => c.charCodeAt(0));
+        const { error: upErr } = await supabase.storage
+          .from("coa-pdfs")
+          .upload(path, binary, { contentType: "application/pdf", upsert: false });
+        if (upErr) throw upErr;
+        result = { path };
+        break;
+      }
+
+      case "sign_coa": {
+        // public: anyone viewing /test-results needs a temporary signed URL
+        const raw = String(params.path || "").trim();
+        if (!raw) throw new Error("path required");
+        // accept either a bare path or a legacy full public URL
+        const path = raw.includes("/coa-pdfs/")
+          ? raw.split("/coa-pdfs/").pop()!.split("?")[0]
+          : raw.replace(/^\/+/, "");
+        const { data, error } = await supabase.storage
+          .from("coa-pdfs")
+          .createSignedUrl(path, 60 * 60); // 1 hour
+        if (error) throw error;
+        result = { signedUrl: data.signedUrl };
+        break;
+      }
+
+
 
 
 

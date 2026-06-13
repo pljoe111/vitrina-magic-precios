@@ -148,13 +148,18 @@ const AdminBatches = () => {
     }
     setUploading(true);
     try {
-      const path = `${form.batch_number}-${Date.now()}.pdf`;
-      const { error: upErr } = await supabase.storage
-        .from("coa-pdfs")
-        .upload(path, file, { contentType: "application/pdf", upsert: true });
-      if (upErr) throw upErr;
-      const { data: pub } = supabase.storage.from("coa-pdfs").getPublicUrl(path);
-      setForm((f) => ({ ...f, coa_url: pub.publicUrl }));
+      const filename = `${form.batch_number}.pdf`;
+      const buf = await file.arrayBuffer();
+      // base64 encode in chunks to avoid call-stack issues on big PDFs
+      let binary = "";
+      const bytes = new Uint8Array(buf);
+      const chunk = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunk) {
+        binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunk)) as any);
+      }
+      const content_base64 = btoa(binary);
+      const { path } = await apiCall("upload_coa", { filename, content_base64 });
+      setForm((f) => ({ ...f, coa_url: path }));
       toast({ title: "PDF subido" });
     } catch (e: any) {
       toast({ title: "Error al subir", description: e.message, variant: "destructive" });
