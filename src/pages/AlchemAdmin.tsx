@@ -253,7 +253,7 @@ const AlchemAdmin = () => {
               </Link>
             </Button>
             <Button variant="outline" size="sm" asChild>
-              <Link to="/alchem-admin/cotizador">
+              <Link to={`/alchem-admin/cotizador?u=${encodeURIComponent(username)}&p=${encodeURIComponent(password)}`}>
                 <FileText className="h-4 w-4 mr-2" /> Cotizador
               </Link>
             </Button>
