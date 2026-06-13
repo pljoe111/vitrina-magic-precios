@@ -248,8 +248,8 @@ const TestResults = () => {
 
                 {!isPending && (
                   <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                    {selected.coa_url && (
-                      <a href={selected.coa_url} target="_blank" rel="noopener noreferrer">
+                    {selected.coa_url && signedCoaUrl && (
+                      <a href={signedCoaUrl} target="_blank" rel="noopener noreferrer">
                         <Button variant="outline" size="sm" className="font-body gap-2">
                           <FileText className="h-4 w-4" />
                           {selected.coa_label || "Certificado"}
