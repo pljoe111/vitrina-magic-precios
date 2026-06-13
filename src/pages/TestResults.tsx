@@ -118,13 +118,13 @@ const TestResults = () => {
   };
 
   const ackContinue = () => {
-    try { localStorage.setItem(PENDING_ACK_KEY, String(Date.now())); } catch {}
+    try { localStorage.setItem(PENDING_ACK_KEY, String(Date.now())); } catch { /* ignore unavailable storage */ }
     setPendingModal(false);
     setShowPending(true);
   };
 
   const ackNever = () => {
-    try { localStorage.setItem(PENDING_ACK_KEY, "never"); } catch {}
+    try { localStorage.setItem(PENDING_ACK_KEY, "never"); } catch { /* ignore unavailable storage */ }
     setPendingModal(false);
     setShowPending(true);
   };
