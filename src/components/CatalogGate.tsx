@@ -92,15 +92,13 @@ const CatalogGate = ({ onAccessGranted }: CatalogGateProps) => {
 
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("access_codes")
-        .select("code, expires_at")
-        .ilike("code", code.trim())
-        .maybeSingle();
+      const { data, error } = await supabase.functions.invoke("admin-manage-codes", {
+        body: { action: "validate_code", code: code.trim() },
+      });
 
       if (error) throw error;
 
-      if (data) {
+      if (data?.valid) {
         localStorage.setItem(
           STORAGE_KEY,
           JSON.stringify({ code: data.code, expiresAt: data.expires_at })
