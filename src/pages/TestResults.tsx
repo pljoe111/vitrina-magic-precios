@@ -64,6 +64,25 @@ const TestResults = () => {
   const [loading, setLoading] = useState(true);
   const [showPending, setShowPending] = useState(false);
   const [pendingModal, setPendingModal] = useState(false);
+  const [signedCoaUrl, setSignedCoaUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSignedCoaUrl(null);
+    if (!selected?.coa_url) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("admin-manage-codes", {
+          body: { action: "sign_coa", path: selected.coa_url },
+        });
+        if (error) throw error;
+        if (!cancelled && data?.signedUrl) setSignedCoaUrl(data.signedUrl);
+      } catch (e) {
+        console.error("sign_coa failed", e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selected?.id, selected?.coa_url]);
 
   const PENDING_ACK_KEY = "alchem.pendingAckAt";
   const shouldShowModal = () => {
@@ -229,8 +248,8 @@ const TestResults = () => {
 
                 {!isPending && (
                   <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                    {selected.coa_url && (
-                      <a href={selected.coa_url} target="_blank" rel="noopener noreferrer">
+                    {selected.coa_url && signedCoaUrl && (
+                      <a href={signedCoaUrl} target="_blank" rel="noopener noreferrer">
                         <Button variant="outline" size="sm" className="font-body gap-2">
                           <FileText className="h-4 w-4" />
                           {selected.coa_label || "Certificado"}
@@ -253,7 +272,13 @@ const TestResults = () => {
               <div className="mt-8">
                 <h2 className="text-lg font-semibold font-display mb-4">Certificado de Análisis</h2>
                 <div className="rounded-lg border border-border overflow-hidden bg-muted/10">
-                  <iframe src={selected.coa_url} title={`CoA - ${selected.product_name}`} className="w-full h-[700px]" />
+                  {signedCoaUrl ? (
+                    <iframe src={signedCoaUrl} title={`CoA - ${selected.product_name}`} className="w-full h-[700px]" />
+                  ) : (
+                    <div className="h-[700px] flex items-center justify-center text-sm text-muted-foreground font-body">
+                      Cargando certificado…
+                    </div>
+                  )}
                 </div>
               </div>
             )}
