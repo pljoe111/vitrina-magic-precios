@@ -14,21 +14,25 @@ serve(async (req) => {
   try {
     const { action, username, password, ...params } = await req.json();
 
-    // Validate credentials
     const ADMIN_USER = "alchem";
     const ADMIN_PASS = Deno.env.get("ADMIN_PASSWORD");
-
-    if (username !== ADMIN_USER || password !== ADMIN_PASS) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Public (no-auth) actions
+    const PUBLIC_ACTIONS = new Set(["validate_code"]);
+
+    if (!PUBLIC_ACTIONS.has(action)) {
+      if (username !== ADMIN_USER || password !== ADMIN_PASS) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     let result;
 
@@ -36,6 +40,78 @@ serve(async (req) => {
       case "login":
         result = { success: true };
         break;
+
+      case "validate_code": {
+        const submitted = String(params.code || "").trim();
+        if (!submitted) {
+          result = { valid: false };
+          break;
+        }
+        const { data, error } = await supabase
+          .from("access_codes")
+          .select("code, expires_at, is_active")
+          .ilike("code", submitted)
+          .maybeSingle();
+        if (error) throw error;
+        const valid = !!(data && data.is_active && new Date(data.expires_at) > new Date());
+        result = valid
+          ? { valid: true, code: data!.code, expires_at: data!.expires_at }
+          : { valid: false };
+        break;
+      }
+
+      case "list_quotes": {
+        const { data, error } = await supabase
+          .from("quotes")
+          .select("id, client_name, title, updated_at")
+          .order("updated_at", { ascending: false });
+        if (error) throw error;
+        result = { quotes: data };
+        break;
+      }
+
+      case "get_quote": {
+        const { id } = params;
+        const { data, error } = await supabase
+          .from("quotes")
+          .select("id, data")
+          .eq("id", id)
+          .single();
+        if (error) throw error;
+        result = { quote: data };
+        break;
+      }
+
+      case "upsert_quote": {
+        const { id, client_name, title, data: quoteData } = params;
+        if (id) {
+          const { data, error } = await supabase
+            .from("quotes")
+            .update({ client_name, title, data: quoteData, updated_at: new Date().toISOString() })
+            .eq("id", id)
+            .select("id")
+            .single();
+          if (error) throw error;
+          result = { id: data.id };
+        } else {
+          const { data, error } = await supabase
+            .from("quotes")
+            .insert({ client_name, title, data: quoteData })
+            .select("id")
+            .single();
+          if (error) throw error;
+          result = { id: data.id };
+        }
+        break;
+      }
+
+      case "delete_quote": {
+        const { id } = params;
+        const { error } = await supabase.from("quotes").delete().eq("id", id);
+        if (error) throw error;
+        result = { success: true };
+        break;
+      }
 
       case "list": {
         const { data, error } = await supabase

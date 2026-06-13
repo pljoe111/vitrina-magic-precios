@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import QuoteEditor from "@/components/quote/QuoteEditor";
@@ -6,6 +7,11 @@ import QuotePreview from "@/components/quote/QuotePreview";
 import { QuoteData, defaultConditions, defaultGuarantee, defaultTitle, generateId } from "@/components/quote/types";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { Eye, EyeOff } from "lucide-react";
 
 const initialData: QuoteData = {
   clientName: "",
@@ -32,44 +38,90 @@ const initialData: QuoteData = {
 type SavedQuote = { id: string; client_name: string; title: string; updated_at: string };
 
 const QuoteGenerator = () => {
+  const [params] = useSearchParams();
+  const [username, setUsername] = useState(params.get("u") || "");
+  const [password, setPassword] = useState(params.get("p") || "");
+  const [authed, setAuthed] = useState(false);
+  const [showPw, setShowPw] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+
   const [data, setData] = useState<QuoteData>(initialData);
   const [savedQuotes, setSavedQuotes] = useState<SavedQuote[]>([]);
   const [currentQuoteId, setCurrentQuoteId] = useState<string | null>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
+  const apiCall = useCallback(
+    async (action: string, p: Record<string, unknown> = {}) => {
+      const { data, error } = await supabase.functions.invoke("admin-manage-codes", {
+        body: { action, username, password, ...p },
+      });
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+      return data;
+    },
+    [username, password]
+  );
+
   const fetchSavedQuotes = useCallback(async () => {
-    const { data: rows } = await supabase
-      .from("quotes")
-      .select("id, client_name, title, updated_at")
-      .order("updated_at", { ascending: false });
-    if (rows) setSavedQuotes(rows);
+    try {
+      const res = await apiCall("list_quotes");
+      setSavedQuotes(res.quotes || []);
+    } catch {
+      /* ignore */
+    }
+  }, [apiCall]);
+
+  const handleLogin = useCallback(async () => {
+    setLoginLoading(true);
+    try {
+      await apiCall("login");
+      setAuthed(true);
+      const res = await apiCall("list_quotes");
+      setSavedQuotes(res.quotes || []);
+    } catch {
+      toast({ title: "Credenciales incorrectas", variant: "destructive" });
+    } finally {
+      setLoginLoading(false);
+    }
+  }, [apiCall]);
+
+  useEffect(() => {
+    if (username && password && !authed) handleLogin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => { fetchSavedQuotes(); }, [fetchSavedQuotes]);
-
   const handleSaveCloud = useCallback(async () => {
-    const payload = { client_name: data.clientName, title: data.title, data: data as any };
-    if (currentQuoteId) {
-      await supabase.from("quotes").update({ ...payload, updated_at: new Date().toISOString() }).eq("id", currentQuoteId);
-    } else {
-      const { data: row } = await supabase.from("quotes").insert(payload).select("id").single();
-      if (row) setCurrentQuoteId(row.id);
+    try {
+      const res = await apiCall("upsert_quote", {
+        id: currentQuoteId,
+        client_name: data.clientName,
+        title: data.title,
+        data,
+      });
+      if (res?.id) setCurrentQuoteId(res.id);
+      await fetchSavedQuotes();
+      toast({ title: "✓", description: data.lang === "es" ? "Cotización guardada" : "Quote saved" });
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
     }
-    await fetchSavedQuotes();
-    toast({ title: "✓", description: data.lang === "es" ? "Cotización guardada" : "Quote saved" });
-  }, [data, currentQuoteId, fetchSavedQuotes]);
+  }, [apiCall, data, currentQuoteId, fetchSavedQuotes]);
 
   const handleLoadQuote = useCallback(async (id: string) => {
-    const { data: row } = await supabase.from("quotes").select("id, data").eq("id", id).single();
-    if (row) {
-      const loaded = row.data as any as QuoteData;
-      if (loaded.validityDate) loaded.validityDate = new Date(loaded.validityDate);
-      if (!loaded.title) loaded.title = defaultTitle[loaded.lang || "es"];
-      setData(loaded);
-      setCurrentQuoteId(row.id);
-      toast({ title: "✓", description: data.lang === "es" ? "Cotización cargada" : "Quote loaded" });
+    try {
+      const res = await apiCall("get_quote", { id });
+      const row = res.quote;
+      if (row) {
+        const loaded = row.data as QuoteData;
+        if (loaded.validityDate) loaded.validityDate = new Date(loaded.validityDate);
+        if (!loaded.title) loaded.title = defaultTitle[loaded.lang || "es"];
+        setData(loaded);
+        setCurrentQuoteId(row.id);
+        toast({ title: "✓", description: data.lang === "es" ? "Cotización cargada" : "Quote loaded" });
+      }
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
     }
-  }, [data.lang]);
+  }, [apiCall, data.lang]);
 
   const handleNewQuote = useCallback(() => {
     setData(initialData);
@@ -77,11 +129,15 @@ const QuoteGenerator = () => {
   }, []);
 
   const handleDeleteQuote = useCallback(async (id: string) => {
-    await supabase.from("quotes").delete().eq("id", id);
-    if (currentQuoteId === id) { setCurrentQuoteId(null); setData(initialData); }
-    await fetchSavedQuotes();
-    toast({ title: "✓", description: data.lang === "es" ? "Cotización eliminada" : "Quote deleted" });
-  }, [currentQuoteId, fetchSavedQuotes, data.lang]);
+    try {
+      await apiCall("delete_quote", { id });
+      if (currentQuoteId === id) { setCurrentQuoteId(null); setData(initialData); }
+      await fetchSavedQuotes();
+      toast({ title: "✓", description: data.lang === "es" ? "Cotización eliminada" : "Quote deleted" });
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    }
+  }, [apiCall, currentQuoteId, fetchSavedQuotes, data.lang]);
 
   const capture = useCallback(async () => {
     if (!previewRef.current) return null;
@@ -181,6 +237,34 @@ const QuoteGenerator = () => {
     win.document.close();
     win.onload = () => { win.print(); win.close(); };
   }, [capture]);
+
+  if (!authed) {
+    return (
+      <div className="admin-selectable min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-sm p-8 space-y-6">
+          <h1 className="text-2xl font-bold text-center text-foreground">Admin · Cotizador</h1>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Usuario</Label>
+              <Input value={username} onChange={(e) => setUsername(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleLogin()} />
+            </div>
+            <div className="space-y-2">
+              <Label>Contraseña</Label>
+              <div className="relative">
+                <Input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleLogin()} />
+                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" onClick={() => setShowPw(!showPw)}>
+                  {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+            <Button className="w-full" onClick={handleLogin} disabled={loginLoading}>
+              {loginLoading ? "Verificando..." : "Entrar"}
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-selectable h-screen flex bg-muted/30">

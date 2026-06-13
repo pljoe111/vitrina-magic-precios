@@ -1,0 +1,1 @@
+CREATE POLICY "Public read coa-pdfs" ON storage.objects FOR SELECT TO public USING (bucket_id = 'coa-pdfs');
