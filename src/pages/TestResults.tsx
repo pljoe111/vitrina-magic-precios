@@ -272,7 +272,13 @@ const TestResults = () => {
               <div className="mt-8">
                 <h2 className="text-lg font-semibold font-display mb-4">Certificado de Análisis</h2>
                 <div className="rounded-lg border border-border overflow-hidden bg-muted/10">
-                  <iframe src={selected.coa_url} title={`CoA - ${selected.product_name}`} className="w-full h-[700px]" />
+                  {signedCoaUrl ? (
+                    <iframe src={signedCoaUrl} title={`CoA - ${selected.product_name}`} className="w-full h-[700px]" />
+                  ) : (
+                    <div className="h-[700px] flex items-center justify-center text-sm text-muted-foreground font-body">
+                      Cargando certificado…
+                    </div>
+                  )}
                 </div>
               </div>
             )}
