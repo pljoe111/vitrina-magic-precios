@@ -68,12 +68,18 @@ const TestResults = () => {
 
   useEffect(() => {
     setSignedCoaUrl(null);
-    if (!selected?.coa_url) return;
+    const url = selected?.coa_url;
+    if (!url) return;
+    // Legacy local PDFs (e.g. /certificates/...) served from public folder — use as-is
+    if ((url.startsWith("/") || url.startsWith("http")) && !url.includes("/coa-pdfs/")) {
+      setSignedCoaUrl(url);
+      return;
+    }
     let cancelled = false;
     (async () => {
       try {
         const { data, error } = await supabase.functions.invoke("admin-manage-codes", {
-          body: { action: "sign_coa", path: selected.coa_url },
+          body: { action: "sign_coa", path: url },
         });
         if (error) throw error;
         if (!cancelled && data?.signedUrl) setSignedCoaUrl(data.signedUrl);
